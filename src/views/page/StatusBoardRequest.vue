@@ -1,0 +1,517 @@
+<template>
+  <div class="py-5">
+    <!-- search -->
+    <div class="px-5 pt-0">
+      <div class="pl-rounded-box">
+        <div class="px-5 py-3">
+          <div class="pl-selection-row">
+            <v-select
+              v-model="GVIFMT_TYPE_CD"
+              class="pl-form type-middle is-sm"
+              :items="mixin_common_code_get_global(list_common_code, 'RECM', computedUserCenter, '전체')"
+              placeholder="전체"
+              @change="getCuttGvifmtHstryList('')"
+            ></v-select>
+            <v-checkbox
+              v-model="chk01.selected"
+              v-for="(chk01, index) in STTS_CD_LIST"
+              :key="index"
+              :label="chk01.text"
+              class="pl-check "
+              @change="getCuttGvifmtHstryList('')"
+            ></v-checkbox>
+          </div>
+        </div>
+        <div class=" px-5 py-3 is-border-top">
+          <div class="pl-form-inline-wrap label-80">
+            <div class="pl-form-inline">
+              <span class="pl-label">
+                조회기간
+              </span>
+              <div class="pl-desc">
+                <compo-date-range-picker
+                  styleProp="flex: 0 0 120px"
+                  ParentStyleProp="width: 280px"
+                  :StartDayProp.sync="SCH_ST_DTS"
+                  :EndDayProp.sync="SCH_END_DTS"
+                  @startDayChange="mixin_testLog(SCH_ST_DTS)"
+                  @endDayChange="mixin_testLog(SCH_END_DTS)"
+                />
+              </div>
+              <v-btn class="pl-btn" @click="getCuttGvifmtHstryList('')">조회</v-btn>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- list top -->
+    <div class="d-flex align-center is-mt-s px-5">
+      <span class="pl-label">전체 (<span class="is-txt-blue">{{ REQUEST_TOT_CNT }}</span>)건</span>
+      <!-- 필터 팝업 -->
+      <v-tooltip content-class="pl-tooltip bottom" bottom>
+        <template v-slot:activator="{ on, attrs }">
+          <v-menu
+            min-width="300"
+            bottom
+            left
+            offset-y
+            rounded="lg"
+            content-class="pa-4 pl-menu-drop"
+            :close-on-content-click="false"
+          >
+            <template v-slot:activator="{ on: menuOn, attrs: menuAttrs }">
+              <v-btn
+                v-bind="menuAttrs"
+                v-on="menuOn"
+                class="pl-tooltip-btn ml-auto"
+                min-width="30"
+                height="30"
+                plain
+                >
+                <v-icon
+                  v-bind="attrs"
+                  v-on="on"
+                  class="pl-icon20 filter"></v-icon>
+              </v-btn>
+            </template>
+            <div class="">
+              <div class="pl-form-inline-wrap vertical label-100 gap-8">
+                <div class="pl-form-inline">
+                  <span class="pl-label">
+                    <v-icon class="pl-icon20 person-part"></v-icon>
+                    <span class="ml-1">부서(팀)</span>
+                  </span>
+                  <div class="pl-desc">
+                    <v-select
+                      v-model="SCH_DEPT_ID"
+                      class="pl-form type-middle"
+                      :items="mixin_ognz_list_detail(common_ognz_list, computedUserCenterDeptId, '전체' )"
+                      placeholder="전체"
+                      :disabled="computedUserDetailType === 'TEAM_LEADER' || computedUserDetailType === 'MANAGER'?true:false"
+                      @change="computedUserDetailType === 'TEAM_LEADER' || computedUserDetailType === 'MANAGER'?'':getUserList()"
+                    ></v-select>
+                  </div>
+                </div>
+                <div class="pl-form-inline">
+                  <span class="pl-label">
+                    <v-icon class="pl-icon20 person"></v-icon>
+                    <span class="ml-1">상담사</span>
+                  </span>
+                  <div class="pl-desc">
+                    <v-autocomplete
+                      v-model="SCH_CUSL_ID"
+                      :items="userList"
+                      item-text="USER_NM"
+                      item-value="USER_ID"
+                      class="pl-form type-middle"
+                      placeholder="전체"
+                      :disabled="computedUserDetailType === 'MANAGER'?true:false"
+                    ></v-autocomplete>
+                  </div>
+                </div>
+              </div>
+              <div class="pl-form-inline-wrap vertical label-100 is-border-top pt-3 gap-8">
+                <div class="pl-form-inline">
+                  <span class="pl-label">
+                    <v-icon class="pl-icon20 cs-phone"></v-icon>
+                    <span class="ml-1">고객 전화번호</span>
+                  </span>
+                  <div class="pl-desc">
+                    <v-text-field
+                      v-model="SCH_CUST_PHN_NO"
+                      class="pl-form type-middle"
+                      placeholder="전화번호 입력"
+                      maxlength="14"
+                      hide-spin-buttons
+                      type="text"
+                      @keyup="setPhoneNo('SCH_CUST_PHN_NO')"
+                      oninput="javascript: this.value = this.value.replace(/[ㄱ-ㅎ|ㅏ-ㅣ|가-힣|a-zA-Z]/g, '' );"
+                    ></v-text-field>
+                  </div>
+                </div>
+                <div class="pl-form-inline">
+                  <span class="pl-label">
+                    <v-icon class="pl-icon20 nametag"></v-icon>
+                    <span class="ml-1">고객 ID</span>
+                  </span>
+                  <div class="pl-desc">
+                    <v-text-field
+                      v-model="SCH_CUST_IDNTF_NO"
+                      class="pl-form type-middle"
+                      placeholder="아이디 입력"
+                    ></v-text-field>
+                  </div>
+                </div>
+              </div>
+              <div class="pl-btn-wrap is-mt-s">
+                <v-btn class="pl-btn is-sm ml-auto" @click="getCuttGvifmtHstryList('')">조회</v-btn>
+              </div>
+            </div>
+          </v-menu>
+        </template>
+        <span>필터</span>
+      </v-tooltip>
+      <compo-tooltip-btn
+        TitleProp="새로고침"
+        ClassProp="pl-tooltip-btn ml-1"
+        IconProp="pl-icon20 refresh"
+        TooltipPositionProp="bottom"
+        @btnClick="reFresh"
+      ></compo-tooltip-btn>
+    </div>
+    <!-- list -->
+    <div
+      style="height: calc(100vh - 334px);"
+      class="is-mt-s pl-notice-list no-link is-border-top pl-scroll-body">
+      <div
+        @click="selecteList(item)"
+        :class="`pl-notice-list--unit ${ item.active ? 'selected' : ''}`"
+        v-for="item in REQUEST_LIST"
+        :key="item.id">
+        <div class="d-flex align-center">
+          <!-- <img :src="item.img" :alt="item.name" style="max-width: 35px; max-height: 35px"> -->
+          <img :src="item['ICON_URL'] !== '/'? '/upload/' + item['ICON_URL'] : require('@/assets/img/@manager_profile_default.png')" :alt="item['CUSL_NM']"  style="max-width: 35px; max-height: 35px; border-radius: 50%;" @error="function(e){e.target.src=require('@/assets/img/@manager_profile_default.png')}">
+          <div class="ml-3">
+            <div>
+              <strong style="font-size: 14px">{{ item.CUSL_NM }}</strong>
+              <span class="ml-2 is-txt-sub">{{ item.FULL_DEPT_NM }}</span>
+            </div>
+            <div >
+              <span>요청일 {{ mixin_convertDate(item.REG_DT, 'yyyy-MM-dd HH:mm:ss') }}</span>
+              <span class="ml-2">제보유형 ({{ item.GVIFMT_TYPE_NM }})</span>
+            </div>
+          </div>
+          <div class="ml-auto mt-2">
+            <span
+              style="width: 40px;"
+              :class="`pl-badge ${ mixin_displayStatus(item.STTS_NM, 'STAT_LIST') }`">
+              {{ item.STTS_NM }}</span>
+          </div>
+        </div>
+      </div>
+      <!-- 더보기 -->
+      <div v-if="!nextDisabled" class="d-flex justify-center is-mt-m pb-3">
+        <v-btn class="pl-btn is-round is-sub px-4" @click="getCuttGvifmtHstryList('next')">더보기</v-btn>
+      </div>
+      <div class="pl-list-nodata" v-if="REQUEST_LIST.length === 0">
+        <span>등록된 데이터가 없습니다.</span>
+      </div>
+    </div>
+    <!-- detail modal -->
+    <v-slide-x-reverse-transition>
+      <div
+        style="position: fixed; z-index: 2; top: 90px; right: 610px; width: 550px;"
+        class="pl-quick-layer "
+        v-if=" slideDetail === true ">
+        <StatusBoardSlideDetail
+          :PropData="selectedItem"
+          :CUTT_GVIFMT_HSTRY_ID="selectedItem.CUTT_GVIFMT_HSTRY_ID"
+          :PHN_CUTT_ID="selectedItem.PHN_CUTT_ID"
+          :PropStat="STAT_LIST"
+          PropType="request"
+          @Close="closeSlide"
+          @setChgData="setChgData"
+        />
+
+      </div>
+    </v-slide-x-reverse-transition>
+  </div>
+</template>
+
+<script>
+import StatusBoardSlideDetail from './StatusBoardSlideDetail'
+
+export default {
+  name: "StatusBoardRequest", //name은 'MENU_' + 파일명 조합
+  props:{
+    SCH_GVIFMT_TYPE_CD: {
+      type: String,
+      default: 'RECM1',
+    },
+    SCH_ST_DT: {
+      type: String,
+      default: '',
+    },
+    SCH_END_DT: {
+      type: String,
+      default: '',
+    }
+  },
+  components: {
+    StatusBoardSlideDetail
+  },
+  data() {
+    return {
+      common_ognz_list:[], //조직정보
+      list_common_code : [],
+      startDate: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
+
+      SCH_ST_DTS : this.$moment(this.startDate).subtract(7,'days').format('YYYY-MM-DD'), //통화 시작 일자
+      SCH_END_DTS : (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10), //통화 시작 일자
+
+      STTS_CD_LIST: [], //제보 상태 코드 목록
+      userList : [{USER_NM : '전체', USER_ID : ''}], //사용자 목록
+
+      //검색
+      GVIFMT_TYPE_CD: '', //제보 유형형
+      SCH_STTS_CD: [], //제보 상태 코드
+      SCH_DEPT_ID : '',
+      SCH_CUSL_ID : '', //상담사
+      SCH_CUST_PHN_NO : '',//고객 전화번호
+      SCH_CUST_IDNTF_NO : '',//고객 ID
+
+      pagination : {
+        page: 1
+        , rowsPerPage: 10
+        , sortBy: ""
+        , descending: ""
+      },//그리드 페이지속성정의
+      nextDisabled:true,  //검색건수가 페이지 제한 건수보다 많을 때 사용하는 다음버튼
+      REQUEST_TOT_CNT : 0,
+      REQUEST_LIST : [],
+//       REQUEST_LIST: [
+//         { img: require('@/assets/img/@manager_profile4.png'), name: '김한나', center: '마이홈센터 - 마이홈1팀', req_date: '2024-06-20 09:35:02', stat: '요청', req_type: '친절콜' },
+//         { img: require('@/assets/img/@manager_profile2.png'), name: '한소미', center: '마이홈센터 - 마이홈2팀', req_date: '2024-06-20 09:35:02', stat: '요청', req_type: '친절콜'
+//           ,active: false,
+//           detail: {
+//             rcv_date: '2024-06-20 09:30:25',
+//             CUS_INFO: [
+//               { title:'인입번호', icon: 'cs-phone', val: '010-5303-4545' },
+//               { title:'휴대전화', val: '010-5303-4545' },
+//               { title:'전화번호1', val: '02-1234-8975' },
+//               { title:'전화번호2', val: '02-9876-2826' },
+//               { title:'고객 ID', icon: 'cs-black', val: 'CT169776487781660258' },
+//               { title:'고객명', val: '나칭찬' },
+//             ],
+//             audio: { audioSrc: require('@/assets/file_example_MP3_700KB.mp3'), } ,
+//             cs_desc: `문 ) 인입되자마자 본사가 어디냐, 전화번호 바꿔라 요구
+// 업무 담당자에 따라 부서가 다름을 말씀 드리고 탐색 진행
+// 경기지역 임대차 보증금 관련 민원이라고 하시어 전화번호 안내 드리니, 지역 말고 본사 번호 알려달라며 욕설 진행되어 경고 구사 2회 후 배려 전환
+// 답) 배려고객 ARS (6123) 그룹 이관`,
+//             reason: `친절하게 응대해 주셔서 감사하고, 앞으로 더욱더 친절상담 바래요^^`,
+//             executer: '김팀장',
+//             executer_date: '2024-06-20 11:50:45',
+//             kind_time: '12:47',
+//           }
+//         },
+//         { img: require('@/assets/img/@manager_profile3.png'), name: '김경란', center: '마이홈센터 - 마이홈1팀', req_date: '2024-06-20 09:35:02', stat: '승인', req_type: '친절콜'},
+//         { img: require('@/assets/img/@manager_profile4.png'), name: '서유람', center: '마이홈센터 - 마이홈2팀', req_date: '2024-06-20 09:35:02', stat: '반려', req_type: '친절콜'},
+//         { img: require('@/assets/img/@manager_profile_default.png'), name: '박민주', center: '마이홈센터 - 마이홈1팀', req_date: '2024-06-20 09:35:02', stat: '반려', req_type: '친절콜'},
+//         { img: require('@/assets/img/@manager_profile6.png'), name: '이세연', center: '마이홈센터 - 마이홈2팀', req_date: '2024-06-20 09:35:02', stat: '승인', req_type: '친절콜'},
+//       ],
+      STAT_LIST: [
+        { code: '요청', value: 'is-green'},
+        { code: '반려', value: 'is-yellow'},
+        { code: '승인', value: 'is-red'},
+      ],
+      selectedItem: {},
+      slideDetail: false,
+    }
+  },
+  computed: {
+  },
+  watch: {
+    SCH_GVIFMT_TYPE_CD() {
+      this.GVIFMT_TYPE_CD = this.SCH_GVIFMT_TYPE_CD;
+      this.SCH_ST_DTS = this.mixin_convertDate(this.SCH_ST_DT, 'yyyy-MM-dd');
+      this.SCH_END_DTS = this.mixin_convertDate(this.SCH_END_DT, 'yyyy-MM-dd');
+
+      this.getCuttGvifmtHstryList('');
+    }
+  },
+  mounted() {
+  },
+  async created() {
+    this.GVIFMT_TYPE_CD = this.SCH_GVIFMT_TYPE_CD;
+    //공통코드설정
+    let codeName = ['RECM', 'RCAP']; //제보유형, 제보 상태
+    this.list_common_code = await this.mixin_common_code_get_all_global(codeName);
+    this.common_ognz_list =  await this.mixin_ognz_list();
+
+    this.STTS_CD_LIST = this.mixin_common_code_get_global(this.list_common_code, 'RCAP', this.computedUserCenter);
+    this.STTS_CD_LIST.forEach((item, idx) => {
+      if(idx === 0) item.selected = true;
+      else item.selected = false;
+    });
+
+    if(this.computedUserDetailType === 'TEAM_LEADER' || this.computedUserDetailType === 'MANAGER'){ //팀장(부팀장), 상담사
+      this.SCH_DEPT_ID = this.computedUserDeptId;
+      if(this.computedUserDetailType === 'MANAGER'){
+        this.SCH_CUSL_ID = this.user_id;
+      }
+    }
+
+    this.SCH_ST_DTS = this.mixin_convertDate(this.SCH_ST_DT, 'yyyy-MM-dd');
+    this.SCH_END_DTS = this.mixin_convertDate(this.SCH_END_DT, 'yyyy-MM-dd');
+
+    this.getUserList(); //상담사 목록
+    this.getCuttGvifmtHstryList(''); //제보 요청 목록
+  },
+  methods: {
+    //제보 요청 목록
+    async getCuttGvifmtHstryList(next) {
+      let postParam = {
+        SCH_CUSTCO_ID : this.computedUserCenter
+        , GVIFMT_TYPE_CD : this.GVIFMT_TYPE_CD //제보 유형
+        , SCH_ST_DTS : this.SCH_ST_DTS.replace(/[^0-9]/g, '') //검색 시작 일자
+        , SCH_END_DTS : this.SCH_END_DTS.replace(/[^0-9]/g, '') //검색 종료 일자
+        , USER_DTL_TYPE : this.computedUserDetailType
+        , CUSL_ID : this.SCH_CUSL_ID
+        , CUST_PHN_NO : this.SCH_CUST_PHN_NO.replace(/[^0-9]/g, '')
+        , CUST_IDNTF_NO : this.SCH_CUST_IDNTF_NO
+      };
+
+      this.SCH_STTS_CD = [];
+      this.STTS_CD_LIST.forEach((item, idx) => {
+        if(item.selected) this.SCH_STTS_CD.push({STTS_CD : item.value});
+      });
+
+      if(this.SCH_STTS_CD.length > 0) postParam.SCH_STTS_CD = JSON.stringify(this.SCH_STTS_CD);
+
+      if(this.computedUserDetailType === 'TEAM_LEADER' || this.computedUserDetailType === 'MANAGER'){ //팀장(부팀장), 상담사
+        postParam.DEPT_ID = this.computedUserDeptId;
+      }else{//센터장
+          postParam.DEPT_ID = this.SCH_DEPT_ID;
+      }
+
+      //다음버튼 클릭 유무
+      if (next == 'next'){
+      } else {
+        this.pagination.page = 1; //페이징 처리 초기화
+        this.REQUEST_LIST = [];
+        this.nextDisabled = true;  //버튼 비활성화
+      }
+
+      let headParam = {
+        head: {
+          ROW_CNT : this.pagination.rowsPerPage,
+          PAGES_CNT : this.pagination.page,
+          PAGING : 'Y',
+        }
+      };
+
+      const response = await this.common_postCall("/phone-api/cutt/cuttGvifmtHstryList", postParam, headParam);
+
+      if (!response.HEADER.ERROR_FLAG){
+        let tempDataText = response.DATA;
+        this.REQUEST_LIST = [...this.REQUEST_LIST, ...tempDataText];
+
+        if(response.HEADER.next !== null && response.HEADER.next !== undefined){
+          if(response.HEADER.next === true){
+            this.nextDisabled = false //버튼 활성화
+          }else{
+            this.nextDisabled = true  //버튼 비활성화
+          }
+        }
+
+        if(this.REQUEST_LIST.length > 0) this.REQUEST_TOT_CNT = response.HEADER.TOT_COUNT;
+        else this.REQUEST_TOT_CNT = 0;
+
+        this.pagination.page += 1;
+      }
+    },
+
+    //상담사 목록 조회
+    async getUserList() {
+      let postParam = {
+        SCH_TYPE : 'CUSL',
+        SCH_GROUP_ID : this.computedUserCenterDeptId,
+        SCH_DEPT_ID : this.SCH_DEPT_ID,
+      };
+
+      let headParam = {
+        head: {
+          ns: "palette3.common.user.dao.UserCmmnMapper",
+          sn: "selectUserList"
+        }
+      };
+
+      const response = await this.common_postCall("/api/biz/common/select/selectUserList", postParam, headParam);
+
+      if (!response.HEADER.ERROR_FLAG){
+        this.userList = [{USER_NM : '전체', USER_ID : ''}];
+        this.userList = [...this.userList, ...response.DATA];
+      }
+    },
+
+    //전화번호 하이픈 추가
+    setPhoneNo(sTarget){
+      let res = this.mixin_setPhoneNo(this[sTarget].replace(/[^0-9]/g, ""));
+      this[sTarget] = res;
+    },
+
+    //새로고침
+    reFresh(){
+      if(this.computedUserDetailType === 'TEAM_LEADER' || this.computedUserDetailType === 'MANAGER'){ //팀장(부팀장), 상담사
+        this.SCH_DEPT_ID = this.computedUserDeptId;
+        this.SCH_CUSL_ID = '';
+      }else{
+        this.SCH_DEPT_ID = '';
+        this.SCH_CUSL_ID = '';
+      }
+
+      this.SCH_CUST_PHN_NO = '';
+      this.SCH_CUST_IDNTF_NO = '';
+
+      this.getCuttGvifmtHstryList('');
+    },
+
+    setCustCuttInfo(item){
+      if(Number(this.CTI_CALL_STAT.replace('stat', '')) === 5){
+        this.showAlertInfo({msg : '대기 중에는 다른 업무를 수행할 수 없습니다.'});
+        return;
+      }else if(Number(this.CTI_CALL_STAT.replace('stat', '')) === 6){
+        this.showAlertInfo({msg : '콜 상담 중에는 다른 업무를 수행할 수 없습니다.<br>상담을 먼저 처리해주세요.'});
+        return;
+      }else{
+        //전화상담탭이 있는지 확인
+        let m0100 = false;
+        if(this.$store.getters['commonStore/GE_COMMON_ACTIVE_TAB'].id === 'CSL_M0100') m0100 = true;
+
+        if(!m0100) this.mixin_set_active_tab({PATH_NM:'/CSL_M0100', NODE_TITLE:'전화상담'});
+        setTimeout(() => {
+          this.$eventBus.$emit('setCuttUnProcCustInfo', item);
+        }, !m0100?1000:10);
+      }
+    },
+
+    deActiveItem(){
+      let arr = this.REQUEST_LIST;
+      for (let index = 0; index < arr.length; index++) {
+        arr[index].active = false;
+      }
+    },
+    selecteList(item){
+      item.CUST_INFO = [
+        { title:'인입번호', icon: 'cs-phone', val: item.CUST_PHN_NO, telYn : true },
+        { title:'휴대전화', val: item.CUST_PHN_NO, telYn : true },
+        { title:'전화번호1', val: item.CUST_PHN_NO1, telYn : true },
+        { title:'전화번호2', val: item.CUST_PHN_NO2, telYn : true },
+        { title:'전화번호3', val: item.CUST_PHN_NO3, telYn : true },
+        { title:'이메일', val: item.EML },
+        { title:'고객 ID', icon: 'cs-black', val: item.CUST_IDNTF_NO },
+        { title:'고객명', val: item.CUST_NM },
+      ];
+
+      item.audio = '';
+
+      this.selectedItem = item;
+      this.slideDetail = true;
+      this.deActiveItem();
+      item.active = true;
+    },
+    closeSlide(){
+      this.deActiveItem();
+      this.slideDetail = false;
+    },
+    setChgData(data){
+      this.closeSlide();
+      this.getCuttGvifmtHstryList('');
+    }
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+
+</style>

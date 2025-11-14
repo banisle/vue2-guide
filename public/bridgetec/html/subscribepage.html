@@ -1,0 +1,367 @@
+﻿<html>
+<head>
+    <title></title>
+    <meta http-equiv="X-UA-Compatible" content="IE=11"/> 
+    
+    <style type="text/css">
+        body, table, input
+        {        		
+            font-family: '맑은 고딕'; 
+            font-size: 12px; 
+            font-weight: lighter; 
+            font-style: normal; 
+            background-color: "#FFFFFF"
+        }
+    </style>
+    
+</head>
+
+<script type="text/javascript">
+    var topPage = parent.parent.frames['TopFrm'];
+
+    function OnInit() {
+        var topPage = parent.frames['TopFrm'];
+
+        if (topPage != null)
+            topPage.AgentPage = this;
+    }
+
+    function GetSubscribeType() {
+        var nType = 0;
+
+        switch (SubscribeType.selectedIndex) {
+            case 0: nType = 0; break;  // Periodic
+            case 1: nType = 1; break;  // Sensitive
+        }
+        return nType;
+    }
+
+    function GetMediaType() {
+        var nResult = 0;
+
+        switch (MediaType.selectedIndex) {
+            case 0: nResult = 0; break;  // Voice
+            case 1: nResult = 10; break;  // Chat
+            case 2: nResult = 20; break;  // Video Voice
+            case 3: nResult = 30; break;  // Video Chat
+            case 4: nResult = 40; break;  // Email
+            case 5: nResult = 50; break;  // Fax
+            case 6: nResult = 61; break;  // MVoip
+            case 7: nResult = 80; break;  // Web
+        }
+        return nResult;
+    }
+
+    function AgentSubscribeEx(id, in_total, in_success, in_talk_time, out_total, out_success, out_talk_time, transfer_calls, login_time, logout_time, in_int_suc, in_ext_suc, in_con_suc, out_int_suc, out_ext_suc, out_con_suc, ringing_time, dialing_time, ready_time, notready_time, acw_time, notready_cnt, ready_cnt, acw_cnt, trans_in_talktime, trans_in_suc) {
+        TextSubscribeId.value = id;
+
+        var msg = "";
+        msg += "Agent Report \n";
+        msg += "Inbound Total : " + in_total.toString() + "\n";
+        msg += "Inbound 성공 : " + in_success.toString() + "\n";
+        msg += "Inbound 통화시간 : " + in_talk_time.toString() + "\n";
+        msg += "Outbound Total : " + out_total.toString() + "\n";
+        msg += "Outbound 성공 : " + out_success.toString() + "\n";
+        msg += "Outbound 통화시간 : " + out_talk_time.toString() + "\n";
+        msg += "전환 호 합계 : " + transfer_calls.toString() + "\n";
+        msg += "최근 로그인 시각 : " + login_time + "\n";
+        msg += "최근 로그아웃 시각 : " + logout_time + "\n";
+        msg += "내선 인바운드 통화수 : " + in_int_suc.toString() + "\n";
+        msg += "국선 인바운드 통화수 : " + in_ext_suc.toString() + "\n";
+        msg += "협의 인바운드 통화수 : " + in_con_suc.toString() + "\n";
+        msg += "내선 아웃바운드 통화수 : " + out_int_suc.toString() + "\n";
+        msg += "국선 아웃바운드 통화수 : " + out_ext_suc.toString() + "\n";
+        msg += "협의 아웃바운드 통화수 : " + out_con_suc.toString() + "\n";
+        msg += "벨울림 시간 : " + ringing_time.toString() + "\n";
+        msg += "다이얼링 시간 : " + dialing_time.toString() + "\n";
+        msg += "수신대기상태 시간 : " + ready_time.toString() + "\n";
+        msg += "자리비움상태 시간 : " + notready_time.toString() + "\n";
+        msg += "후 처리상태 시간 : " + acw_time.toString() + "\n";
+        msg += "수신대기 횟수 : " + ready_cnt.toString() + "\n";
+        msg += "자리비움 횟수 : " + notready_cnt.toString() + "\n";
+        msg += "후 처리 횟수 : " + acw_cnt.toString() + "\n";
+        msg += "호전환 수신 통화시간 : " + trans_in_talktime.toString() + "\n";
+        msg += "호전환 수신 통화호 : " + trans_in_suc.toString() + "\n";
+
+        AgentSubscribeOutput(msg);
+    }
+
+    function AgentSubscribe(id, in_total, in_success, in_talk_time, out_total, out_success, out_talk_time, transfer_calls, login_time, logout_time, in_int_suc, in_ext_suc, in_con_suc, out_int_suc, out_ext_suc, out_con_suc, ringing_time, dialing_time, ready_time, notready_time, acw_time) {
+        TextSubscribeId.value = id;
+        
+        var msg = "";
+        msg += "Agent Report \n";
+        msg += "Inbound Total : " + in_total.toString() + "\n";
+        msg += "Inbound 성공 : " + in_success.toString() + "\n";
+        msg += "Inbound 통화시간 : " + in_talk_time.toString() + "\n";
+        msg += "Outbound Total : " + out_total.toString() + "\n";
+        msg += "Outbound 성공 : " + out_success.toString() + "\n";
+        msg += "Outbound 통화시간 : " + out_talk_time.toString() + "\n";
+        msg += "전환 호 합계 : " + transfer_calls.toString() + "\n";
+        msg += "최근 로그인 시각 : " + login_time + "\n";
+        msg += "최근 로그아웃 시각 : " + logout_time + "\n";
+        msg += "내선 인바운드 통화수 : " + in_int_suc.toString() + "\n";
+        msg += "국선 인바운드 통화수 : " + in_ext_suc.toString() + "\n";
+        msg += "협의 인바운드 통화수 : " + in_con_suc.toString() + "\n";
+        msg += "내선 아웃바운드 통화수 : " + out_int_suc.toString() + "\n";
+        msg += "국선 아웃바운드 통화수 : " + out_ext_suc.toString() + "\n";
+        msg += "협의 아웃바운드 통화수 : " + out_con_suc.toString() + "\n";
+        msg += "벨울림 시간 : " + ringing_time.toString() + "\n";
+        msg += "다이얼링 시간 : " + dialing_time.toString() + "\n";
+        msg += "수신대기상태 시간 : " + ready_time.toString() + "\n";
+        msg += "자리비움상태 시간 : " + notready_time.toString() + "\n";
+        msg += "후 처리상태 시간 : " + acw_time.toString() + "\n";
+
+        AgentSubscribeOutput(msg);
+    }
+
+    function GroupSubscribe(data) {
+        TextSubscribeId.value = data.subscribeid;
+        
+        var msg = "";
+        msg += "Group Report \n";
+        msg += "응답호 대기시간 평균 : " + data.answaitavr + "\n";
+        msg += "내선 인바운드 인입 호 수 : " + data.ininttot + "\n";
+        msg += "내선 인바운드 성공 통화 수 : " + data.inintsuc + "\n";
+        msg += "국선 인바운드 인입 호 수 : " + data.inexttot + "\n";
+        msg += "국선 인바운드 성공 통화 수 : " + data.inextsuc + "\n";
+        msg += "내선 아웃바운드 통화 시도 수 : " + data.outinttot + "\n";
+        msg += "내선 아웃바운드 성공 통화 수 : " + data.outintsuc + "\n";
+        msg += "국선 아웃바운드 통화 시도 수 : " + data.outexttot + "\n";
+        msg += "국선 아웃바운드 성공 통화 수 : " + data.outextsuc + "\n";
+        msg += "내선 인바운드 통화 시간 합계 : " + data.ininttalktime + "\n";
+        msg += "국선 인바운드 통화 시간 합계 : " + data.inexttalktime + "\n";
+        msg += "전체 상담원 수 : " + data.allagentcount + "\n";
+        msg += "로그인 상담원 수 : " + data.loginagentcount + "\n";
+        msg += "수신대기 상담원 수 : " + data.readyagentcount + "\n";
+        msg += "벨울림 상담원 수 : " + data.ringingcount + "\n";
+        msg += "다이얼링 상담원 수 : " + data.dialingcount + "\n";
+        msg += "내선 인바운드 통화 중 상담원 수 : " + data.ibintbusyagt + "\n";
+        msg += "국선 인바운드 통화 중 상담원 수 : " + data.ibextbusyagt + "\n";
+        msg += "내선 아웃바운드 통화 중 상담원 수: " + data.obintbusyagt + "\n";
+        msg += "국선 아웃바운드 통화 중 상담원 수 : " + data.obextbusyagt + "\n";
+        msg += "후처리 상담원 수 : " + data.aftworkagentcount + "\n";
+        msg += "자리비움 상담원 수 : " + data.notreadyagentcount + "\n";
+
+        GroupSubscribeOutput(msg);
+    }
+
+    function QueueSubscribe(data) {
+        TextSubscribeId.value = data.subscribeid;
+
+        var msg = "";
+        msg += "Queue Report \n";
+        msg += "대기호 : " + data.waitcount + "\n";
+        msg += "현재 대기호 최대 대기 시간 : " + data.maxwaittime + "\n";
+        msg += "현재 대기호 대기시간 합계 : " + data.waittimesum + "\n";
+        msg += "인입호 : " + data.inboundtotal + "\n";
+        msg += "응답호 : " + data.accepttotal + "\n";
+        msg += "Non-Service 처리호 : " + data.nonsvctotal + "\n";
+        msg += "서비스 레벨 이내 응답호 : " + data.svcaccepttotal + "\n";
+        msg += "서비스 레벨 이내 포기호 : " + data.svcabandontotal + "\n";
+        msg += "포기호 : " + data.abandontotal + "\n";
+        msg += "거부호 : " + data.rejecttotal + "\n";
+        msg += "응답률 : " + data.acceptratio + "\n";
+        msg += "내선 아웃바운드 통화 시도 수 : " + data.outinttot + "\n";
+        msg += "내선 아웃바운드 성공 통화 수 : " + data.outintsuc + "\n";
+        msg += "국선 아웃바운드 통화 시도 수 : " + data.outexttot + "\n";
+        msg += "국선 아웃바운드 성공 통화 수 : " + data.outextsuc + "\n";
+        msg += "응답호 총 통화시간 : " + data.accepttalktimesum + "\n";
+        msg += "서비스 레벨 타임 : " + data.svclvltime + "\n";
+        msg += "서비스 레벨 : " + data.svclevel + "\n";
+        msg += "전체 상담원 수 : " + data.allagentcount + "\n";
+        msg += "로그인 상담원 수 : " + data.loginagentcount + "\n";
+        msg += "수신대기 상담원 수 : " + data.readyagentcount + "\n";
+        msg += "벨울림 상담원 수 : " + data.ringingcount + "\n";
+        msg += "다이얼링 상담원 수 : " + data.dialingcount + "\n";
+        msg += "내선 인바운드 통화 중 상담원 수 : " + data.ibintbusyagt + "\n";
+        msg += "국선 인바운드 통화 중 상담원 수 : " + data.ibextbusyagt + "\n";
+        msg += "내선 아웃바운드 통화 중 상담원 수 : " + data.obintbusyagt + "\n";
+        msg += "국선 아웃바운드 통화 중 상담원 수 : " + data.obextbusyagt + "\n";
+        msg += "후처리 상담원 수 : " + data.aftworkagentcount + "\n";
+        msg += "자리비움 상담원 수 : " + data.notreadyagentcount + "\n";
+
+        QueueSubscribeOutput(msg);
+    }
+
+    function TenantSubscribe(data) {
+        TextSubscribeId.value = data.subscribeid;
+
+        var msg = "";
+        msg += "Tenant Report \n";
+        msg += "현재 인바운드 큐 대기호 : " + data.waitcount + "\n";
+        msg += "현재 인바운드 대기호 최대 대기 시간 : " + data.maxwaittime + "\n";
+        msg += "현재 인바운드 대기호 대기시간 합계 : " + data.waittimesum + "\n";
+        msg += "IVR 인입호 : " + data.ivrtotal + "\n";
+        msg += "IVR 포기호 : " + data.ivrabandon + "\n";
+        msg += "IVR 전환호 : " + data.ivrdodtrns + "\n";
+        msg += "인바운드 큐 인입호 : " + data.ivricqtrns + "\n";
+        msg += "인바운드 큐 응답호 : " + data.icqaccept + "\n";
+        msg += "인바운드 큐 서비스 레벨 이내 응답호 : " + data.icqsvclvlaccept + "\n";
+        msg += "인바운드 큐 서비스 레벨 이내 포기호 : " + data.icqsvclvlabandon + "\n";
+        msg += "인바운드 큐 포기호 : " + data.icqabandon + "\n";
+        msg += "인바운드 큐 거부호 : " + data.icqreject + "\n";
+        msg += "Non-Service 처리호 : " + data.nonsvctotal + "\n";
+        msg += "국선 아웃바운드 시도 호 : " + data.outexttot + "\n";
+        msg += "국선 아웃바운드 성공 호 : " + data.outextsuc + "\n";
+        msg += "인바운드 큐 응답률 : " + data.icqacceptratio + "\n";
+        msg += "인바운드 통화 시간 합계 : " + data.intalktime + "\n";
+        msg += "아웃바운드 통화 시간 합계 : " + data.outtalktime + "\n";
+        msg += "서비스 레벨 : " + data.svclevel + "\n";
+        msg += "전체 상담원 수 : " + data.allagentcount + "\n";
+        msg += "로그인 상담원 수 : " + data.loginagentcount + "\n";
+        msg += "수신대기 상담원 수 : " + data.readyagentcount + "\n";
+        msg += "벨울림 상담원 수 : " + data.ringingcount + "\n";
+        msg += "다이얼링 상담원 수 : " + data.dialingcount + "\n";
+        msg += "내선 인바운드 통화 중 상담원 수 : " + data.ibintbusyagt + "\n";
+        msg += "국선 인바운드 통화 중 상담원 수 : " + data.ibextbusyagt + "\n";
+        msg += "내선 아웃바운드 통화 중 상담원 수 : " + data.obintbusyagt + "\n";
+        msg += "국선 아웃바운드 통화 중 상담원 수 : " + data.obextbusyagt + "\n";
+        msg += "후처리 상담원 수 : " + data.aftworkagentcount + "\n";
+        msg += "자리비움 상담원 수 : " + data.notreadyagentcount + "\n";
+
+        TenantSubscribeOutput(msg);
+    }
+
+    function DnisSubscribe(id, inbound_total, abandon_total, agt_try, agt_try_abandon, reject_total, accept_total, non_svc_total, ivr_svc_count, wait_count, inbusy_agent_count, ivr_agt_conf_count) {
+        TextSubscribeId.value = id;
+
+        var msg = "";
+        msg += "Dnis Report \n";
+        msg += "인입호 수 : " + inbound_total + "\n";
+        msg += "포기호 수 : " + abandon_total + "\n";
+        msg += "상담원 연결 시도호 수 : " + agt_try + "\n";
+        msg += "상담원 연결 시도후 포기호 수 : " + agt_try_abandon + "\n";
+        msg += "상담원 거부호 수 : " + reject_total + "\n";
+        msg += "상담원 연결 성공호 수 : " + accept_total + "\n";
+        msg += "Non-Service 처리호 수 : " + non_svc_total + "\n";
+        msg += "현재 IVR 청취 고객호 수 : " + ivr_svc_count + "\n";
+        msg += "현재 CTI Queue 대기호 수 : " + wait_count + "\n";
+        msg += "현재 상담원 통화호 수 : " + inbusy_agent_count + "\n";
+        msg += "현재 상담원 IVR 3자 통화호 수 : " + ivr_agt_conf_count + "\n";
+
+        DnisSubscribeOutput(msg);
+    }
+
+    function AgentSubscribeOutput(str) {
+        txtAgentSubscribeOutput.value = str;
+        txtAgentSubscribeOutput.scrollTop = txtAgentSubscribeOutput.scrollHeight;
+    }
+    function GroupSubscribeOutput(str) {
+        txtGroupSubscribeOutput.value = str;
+        txtGroupSubscribeOutput.scrollTop = txtGroupSubscribeOutput.scrollHeight;
+    }
+    function QueueSubscribeOutput(str) {
+        TxtQueueSubscribeOutput.value = str;
+        TxtQueueSubscribeOutput.scrollTop = TxtQueueSubscribeOutput.scrollHeight;
+    }
+    function TenantSubscribeOutput(str) {
+        txtTenantSubscribeOutput.value = str;
+        txtTenantSubscribeOutput.scrollTop = txtTenantSubscribeOutput.scrollHeight;
+    }
+    function DnisSubscribeOutput(str) {
+        txtDnisSubscribeOutput.value = str;
+        txtDnisSubscribeOutput.scrollTop = txtDnisSubscribeOutput.scrollHeight;
+    }
+
+    function ButtonAgentReportSubscribe_onclick() {
+        topPage.api.AgentRptSubscribe(TextTenantName.value, TextAgentId.value, TextDuration.value, GetSubscribeType(), GetMediaType());
+    }
+    function ButtonAgentReportSubscribeEx_onclick() {
+        topPage.api.AgentRptSubscribeEx(TextTenantName.value, TextAgentId.value, TextDuration.value, GetSubscribeType(), GetMediaType());
+    }
+    function ButtonGroupReportSubscribe_onclick() {
+        topPage.api.GroupRptSubscribe(TextTenantName.value, TextGroupIdSet.value, TextDuration.value, GetSubscribeType(), GetMediaType());
+    }
+    function ButtonQueueReportSubscribe_onclick() {
+        topPage.api.QueueRptSubscribe(TextTenantName.value, TextQueueDnSet.value, TextDuration.value, GetSubscribeType(), GetMediaType());
+    }
+    function ButtonTenantReportSubscribe_onclick() {
+        topPage.api.TenantRptSubscribe(TextTenantName.value, TextDuration.value, GetSubscribeType(), GetMediaType());
+    }
+    function ButtonDnisReportSubscribe_onclick() {
+        topPage.api.DNISRptSubscribe(TextDnisSet.value, TextPrivateData.value, TextDuration.value, GetSubscribeType());
+    }
+    function ButtonCloseSubscribe_onclick() {
+        topPage.api.CloseSubscribe(TextSubscribeId.value);
+    }
+
+</script>
+
+<body onload="javascript:OnInit()">
+<table width="100%" frame="box" cellspacing="0">
+<tr>
+<td colspan=2><h3>* Subscribe Page</h3></td>
+<td align=right>Subscribe ID :</td>
+<td><input id="TextSubscribeId" type="text" align="middle" /></td>
+<td align=right>Duration :</td>
+<td><input id="TextDuration" type="text" align="middle" /></td>
+<td align=right>Type :</td>
+<td><select id="SubscribeType" name="SubscribeType" style="width: 100%;" align="middle">
+						<option selected="selected">Periodic</option>		 
+						<option>Sensitive</option>			 
+                </select></td>
+<td align=right>Private Data :</td>
+<td><input id="TextPrivateData" type="text" align="middle" /></td>
+</tr>
+<tr>
+<td align=right>Agent ID :</td>
+<td><input id="TextAgentId" type="text" align="middle" /></td>
+<td align=right>Group ID Set :</td>
+<td><input id="TextGroupIdSet" type="text" align="middle" /></td>
+<td align=right>Queue DN Set :</td>
+<td><input id="TextQueueDnSet" type="text" align="middle" /></td>
+<td align=right>Tenant Name :</td>
+<td><input id="TextTenantName" type="text" align="middle" /></td>
+<td align=right>DNIS Set :</td>
+<td><input id="TextDnisSet" type="text" align="middle" /></td>
+<td align=right>Media Type :</td>
+<td><select id="MediaType" name="MediaType" align="middle">
+                    	<option value="Voice"> Voice </option>
+                        <option value="Chat"> Chat </option>
+	                    <option value="Video Voice"> Video Voice </option>
+                        <option value="Video Chat"> Video Chat </option>
+                        <option value="Email"> Email </option>
+                        <option value="Fax"> Fax </option>
+                        <option value="MVoip"> MVoip </option>
+                        <option value="Web"> Web </option>
+                </select></td>
+
+</tr>
+</table>
+<table width="100%" frame="box" cellspacing="0">
+<tr>
+<td><input id="ButtonAgentReportSubscribe" style="width: 100%" type="button" value="Agent Report Subscribe" onclick="return ButtonAgentReportSubscribe_onclick()" /></td>
+<td><input id="ButtonAgentReportSubscribeEx" style="width: 100%" type="button" value="Agent Report SubscribeEx" onclick="return ButtonAgentReportSubscribeEx_onclick()" /></td>
+<td><input id="ButtonGroupReportSubscribe" style="width: 100%" type="button" value="Group Report Subscribe" onclick="return ButtonGroupReportSubscribe_onclick()" /></td>
+<td><input id="ButtonQueueReportSubscribe" style="width: 100%" type="button" value="Queue Report Subscribe" onclick="return ButtonQueueReportSubscribe_onclick()" /></td>
+<td><input id="ButtonTenantReportSubscribe" style="width: 100%" type="button" value="Tenant Report Subscribe" onclick="return ButtonTenantReportSubscribe_onclick()" /></td>
+<td><input id="ButtonDnisReportSubscribe" style="width: 100%" type="button" value="DNIS Report Subscribe" onclick="return ButtonDnisReportSubscribe_onclick()" /></td>
+<td><input id="ButtonCloseSubscribe" style="width: 100%" type="button" value="Colse Subscribe" onclick="return ButtonCloseSubscribe_onclick()" /></td>
+</tr>
+</table>
+<table width="100%" frame="box" cellpadding="0">
+<tr>
+    <td>
+        <textarea id="txtAgentSubscribeOutput" name="txtAgentSubscribeOutput" style="overflow: scroll;
+            visibility: visible; width: 100%; height: 290px; font-family: '맑은 고딕';" rows="1"></textarea>
+    </td>
+    <td>
+        <textarea id="txtGroupSubscribeOutput" name="txtGroupSubscribeOutput" style="overflow: scroll; 
+            visibility: visible; width: 100%; height: 290px; font-family: '맑은 고딕';" rows="1"></textarea>
+    </td>
+    <td>
+        <textarea id="TxtQueueSubscribeOutput" name="TxtQueueSubscribeOutput" style="overflow: scroll; 
+            visibility: visible; width: 100%; height: 290px; font-family: '맑은 고딕';" rows="1"></textarea>
+    </td>
+    <td>
+        <textarea id="txtTenantSubscribeOutput" name="txtTenantSubscribeOutput" style="overflow: scroll; 
+            visibility: visible; width: 100%; height: 290px; font-family: '맑은 고딕';" rows="1"></textarea>
+    </td>
+    <td>
+        <textarea id="txtDnisSubscribeOutput" name="txtDnisSubscribeOutput" style="overflow: scroll; 
+            visibility: visible; width: 100%; height: 290px; font-family: '맑은 고딕';" rows="1"></textarea>
+    </td>
+</tr>
+</body>
+</hrml>

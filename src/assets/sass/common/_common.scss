@@ -1,0 +1,38 @@
+@charset "utf-8";
+
+@import 'color';
+@import 'spacing';
+@import 'text';
+@import 'flex';
+@import 'icons';
+@import 'scrollbar';
+@import 'info';
+@import 'align';
+@import 'badge';
+@import 'transition';
+
+.is-hidden{display: none !important;}
+.is-border-all {
+  border: 1px solid $color-border;
+}
+.is-border-top {
+  border-top: 1px solid $color-border;
+}
+.is-border-bottom {
+  border-bottom: 1px solid $color-border;
+}
+.is-border-right {
+  border-right: 1px solid $color-border;
+}
+.is-border-left {
+  border-left: 1px solid $color-border;
+}
+.is-border-sub-top {
+  border-top: 1px solid $color-border-sub;
+}
+.is-border-sub-bottom {
+  border-bottom: 1px solid $color-border-sub;
+}
+.is-border-sub-right {
+  border-right: 1px solid $color-border-sub;
+}

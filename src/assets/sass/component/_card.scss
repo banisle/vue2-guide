@@ -1,0 +1,161 @@
+@charset "utf-8";
+.pl-container {
+  height: 100%;
+  box-sizing: border-box;
+  .pl-card-wrap {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: #FFF;
+    // border-radius: 10px;
+  }
+}
+.pl-card {
+  padding: 16px 20px;
+  &.is-noborder{
+    border-top: 0 !important;
+  }
+  &.is-border {
+    border-top: 1px solid $color-border !important;
+  }
+  &.is-border-bottom {
+    border-bottom: 1px solid $color-border !important;
+  }
+  &-body {
+    padding: 0 26px;
+  }
+  &-form-body {
+    margin-top: 14px;
+    max-width: 70%;
+    min-width: 600px;
+  }
+  &-top {
+    display: flex;
+    align-items: center;
+    padding: 14px;
+    border-bottom: 1px solid $color-border !important;
+    &.is-noborder {
+      border-bottom: 0 !important;
+    }
+    &-title {
+      display: flex;
+      align-items: center;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    &-var {
+      position: relative;
+      margin-left: 10px;
+      padding-left: 10px;
+      &::before {
+        content: '';
+        width: 1px;
+        height: 12px;
+        position: absolute;
+        top: 50%;
+        left: 0;
+        background: $color-border;
+        transform: translateY(-50%);
+      }
+    }
+  }
+  &-intop{
+    display: flex;
+    align-items: center;
+    height: 35px;
+    &--title {
+      display: flex;
+      align-items: center;
+      font-size: 15px;
+      font-weight: 700;
+    }
+  }
+}
+
+.pl-cols {
+  &.is-border {
+    border-top: 1px solid $color-border !important;
+  }
+  .pl-card:last-child {
+    border: 0;
+  }
+  .is-vrt {
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid $color-border;
+    .pl-card {
+      // border-top: 1px solid $color-border;
+      &:first-child {
+        border-top: 0;
+      }
+      &.is-bottom {
+        display: flex;
+        gap: 6px;
+        margin-top: auto;
+        .is-right {
+          display: flex;
+          gap: 6px;
+          margin-left: auto;
+        }
+      }
+    }
+    &:last-child{
+      border-right: 0;
+    }
+  }
+}
+
+.pl-acco-box{
+  border: 1px solid $color-border;
+  border-radius: 8px;
+  &--title{
+    display: flex;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 12px 8px 12px 16px;
+    &::after{
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: 4px;
+      width: 20px;
+      height: 20px;
+      // background-image: url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIj48cGF0aCBkPSJtOTguOSAxODQuNyAxLjggMi4xIDEzNiAxNTYuNWM0LjYgNS4zIDExLjUgOC42IDE5LjIgOC42IDcuNyAwIDE0LjYtMy40IDE5LjItOC42TDQxMSAxODcuMWwyLjMtMi42YzEuNy0yLjUgMi43LTUuNSAyLjctOC43IDAtOC43LTcuNC0xNS44LTE2LjYtMTUuOEgxMTIuNmMtOS4yIDAtMTYuNiA3LjEtMTYuNiAxNS44IDAgMy4zIDEuMSA2LjQgMi45IDguOXoiIGZpbGw9IiNjNGM0YzQiIGNsYXNzPSJmaWxsLTAwMDAwMCI+PC9wYXRoPjwvc3ZnPg==");
+      background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 5L12 9.99999L7 15' stroke='%23232323' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E%0A");
+      background-size: 12px;
+      background-position: center;
+      transform: translateY(-50%) rotate(90deg);
+    }
+    &.active-true{
+      &::after{
+        transform: translateY(-50%) rotate(270deg);
+      }
+    }
+    &.has-link{
+      &::after{
+        background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 5L12 9.99999L7 15' stroke='%23232323' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E%0A");
+        transform: translateY(-50%)
+      }
+    }
+
+  }
+  &--content{
+    &-box{
+      padding: 4px 16px 12px 16px;
+    }
+    &-footer{
+      padding: 8px;
+      border-top: 1px solid $color-border;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}
+
+.pl-rounded-box{
+  border-radius: 8px;
+  border: 1px solid $color-border;
+}

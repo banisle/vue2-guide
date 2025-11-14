@@ -1,0 +1,830 @@
+﻿<html>
+<head>
+    <title></title>
+    <meta charset="UTF-8" />
+    <!--<script type="text/javascript" src="js/jquery-2.1.1.js"> </script>-->
+    <script type="text/javascript" src="js/jquery-1.11.2.min.js"> </script>
+    <script type="text/javascript" src="js/ipron.js"> </script>
+    <script type="text/javascript">
+        window.onload = function () { MakeMonitor(); };
+
+        var api = ipron;
+
+        function leadingSpaces(n, digits) {
+            var space = '';
+            n = n.toString();
+
+            if (n.length < digits) {
+                for (var i = 0; i < digits - n.length; i++)
+                    space += '0';
+            }
+            return space + n;
+        }
+
+        function AddResponse(str) {
+            var strTime;
+            var now = new Date();
+            strTime = "[" + leadingSpaces(now.getHours(), 2) + ":" + leadingSpaces(now.getMinutes(), 2) + ":" + leadingSpaces(now.getSeconds(), 2) + "." + leadingSpaces(now.getMilliseconds(), 3) + "] | ";
+
+            txtResponse.value += strTime + str + '\n';
+
+            if (chkResponseAutoScroll.checked) {
+                txtResponse.scrollTop = txtResponse.scrollHeight;
+            }
+        }
+
+        function AddEvent(str) {
+        /*
+            var strTime;
+            var now = new Date();
+            strTime = "[" + leadingSpaces(now.getHours(), 2) + ":" + leadingSpaces(now.getMinutes(), 2) + ":" + leadingSpaces(now.getSeconds(), 2) + "." + leadingSpaces(now.getMilliseconds(), 3) + "] | ";
+
+            txtEvent.value += strTime + str + '\n';
+
+            if (chkEventAutoScroll.checked) {
+                txtEvent.scrollTop = txtEvent.scrollHeight;
+            }
+            */
+        }
+
+        function ResponseClear_onclick() {
+            txtResponse.value = "";
+        }
+
+        function EventClear_onclick() {
+            txtEvent.value = "";
+        }
+
+        function MakeAgentStateString(state) {
+            var str;
+
+            switch (state) {
+                case 0: str = "NULL"; break;
+                case 10: str = "Logout"; break;
+                case 20: str = "Login"; break;
+                case 30: str = "Not Ready"; break;
+                case 40: str = "Ready"; break;
+                case 41: str = "InReady"; break;
+                case 42: str = "OutReady"; break;
+                case 50: str = "Busy"; break;
+                case 60: str = "Work After Call"; break;
+                default: str = "Unknown State : " + state.toString(); break;
+            }
+            return str;
+        }
+
+        function GetStateSubCode(extension) {
+            // Extension 활용
+            var i = 0, j = 0;
+            var nRecord = 0, nField = 0;
+            var strKey, strValue;
+            var str = "";
+
+            if (OpenPage == null && AgentPage == null)
+                return;
+
+            if (extension <= 0) {
+                AddResponse("해당 상태에 대한 Sub Code가 없습니다");
+            }
+            // Record 개수 가져오기
+            nRecord = ipron.EXTGetRecordCount(extension);
+
+            for (i = 0; i < nRecord; i++) {
+                nField = ipron.EXTGetValueCountForRecord(extension, i);
+
+                strKey = ipron.EXTGetKey(extension, i);
+
+                for (j = 0; j < nField; j++) {
+                    strValue = ipron.EXTGetValueForRecord(extension, i, j);
+                }
+
+                if (OpenPage != null) {
+                    OpenPage.AddStateSub(strKey, strValue);
+                }
+                if (AgentPage != null) {
+                    AgentPage.AddStateSub(strKey, strValue);
+                }
+            }
+        }
+
+        function ExtensionData(data) {
+            var extlog = "[" + data.method + "]";
+            var ex = "";
+
+            //ex = ipron.GetExtensionData(TextExHandle.value);
+            extlog += " Extension Data [" + ex + "]";
+
+            return extlog;
+        }
+
+        function CBFuncEvent(data) {
+            var log = "[" + data.method + "]";
+            switch (data.method) {
+                case ipron.APIEvent.ACTIVE_TIMEOUT:
+                    log += " ActiveTimeout"
+                    break;
+                case ipron.APIEvent.RINGING: // ringing
+                    log += " Rringing. ThisDn[" + data.thisdn + "]";
+                    SetAgentColor(data.thisdn, "#ffffaa");
+                    break;
+                case ipron.APIEvent.ESTABLISHED: // establish
+                    log += " Establish. ThisDn[" + data.thisdn + "]";
+                    SetAgentColor(data.thisdn, "#0000ff");
+                    break;
+                case ipron.APIEvent.RELEASED: //released
+                    log += " Released. ThisDn[" + data.thisdn + "]";
+                    break;
+                case ipron.APIEvent.DIALING: // dialing
+                    log += " Dialing. ThisDn[" + data.thisdn + "]";
+                    SetAgentColor(data.thisdn, "#ffffaa");
+                    break;
+                case ipron.APIEvent.ABANDONED: // abandoned
+                    log += " Abandoned. ThisDn[" + data.thisdn + "]";
+                    break;
+                case ipron.APIEvent.DESTBUSY: // dest busy
+                    log += " DestBusy. ThisDn[" + data.thisdn + "]";
+                    break;
+                case ipron.APIEvent.HELD: // held
+                    log += " Held. ThisDn[" + data.thisdn + "]";
+                    break;
+                case ipron.APIEvent.RETRIEVED: // retrieved
+                    log += " Retrieved. ThisDn[" + data.thisdn + "]";
+                    break;
+                case ipron.APIEvent.PARTYADDED: // party added
+                    log += " PartyAdded. ThisDn[" + data.thisdn + "]";
+                    break;
+                case ipron.APIEvent.PARTYCHANGED: // party changed
+                    log += " PartyChanged. ThisDn[" + data.thisdn + "]";
+                    break;
+                case ipron.APIEvent.PARTYDELETED: // party deleted
+                    log += " PartyDeleted. ThisDn[" + data.thisdn + "]";
+                    break;
+                case ipron.APIEvent.QUEUED: // queued
+                    log += " Queued. ThisDn[" + data.thisdn + "]";
+                    break;
+                case ipron.APIEvent.DIVERTED: // diverted
+                    log += " Diverted. ThisDn[" + data.thisdn + "]";
+                    break;
+                case ipron.APIEvent.AGENTLOGIN: // agent login
+                    log += " AgentLogin. AgentID[" + data.agentid + "]";
+                    break;
+                case ipron.APIEvent.AGENTLOGOUT: // agent logout
+                    log += " AgentLogout. AgentID[" + data.agentid + "]";
+                    SetAgentColor(data.agentdn, "gray");
+                    break;
+                case ipron.APIEvent.AGENTREADY: // agent ready
+                    log += " AgentReady. AgentID[" + data.agentid + "]";
+                    log += " Agent State[" + data.agentstate + "]";
+                    SetAgentColor(data.agentdn, "#aaffaa");
+                    break;
+                case ipron.APIEvent.AGENTNOTREADY: // agent not ready
+                    log += " AgentNotReady. AgentID[" + data.agentid + "]";
+                    log += " Agent State[" + data.agentstate + "]";
+                    SetAgentColor(data.agentdn, "#ffaaaa");
+                    break;
+                case ipron.APIEvent.AGENTACW: // agent acw
+                    log += " AgentAcw. AgentID[" + data.agentid + "]";
+                    log += " Agent State[" + data.agentstate + "]";
+                    break;
+                case ipron.APIEvent.REGISTERED: // registered
+                    log += " Registered. ThisDn[" + data.thisdn + "]";
+                    if(data.result == 0)
+                        AddMonitor(data.thisdn);
+                    break;
+                case ipron.APIEvent.UNREGISTERED: // unregistered
+                    log += " Unregistered. ThisDn[" + data.thisdn + "]";
+                    DelMonitor(data.thisdn);
+                    break;
+                case ipron.APIEvent.UPDATE_USERDATA: // update userdata
+                    log += " UpdateUserdata. UpdateDn[" + data.updatedn + "]";
+                    break;
+                case ipron.APIEvent.USEREVENT: // user event
+                    log += " UserEvent. SenderDn[" + data.senderdn + "]";
+                    break;
+                case ipron.APIEvent.INITIATED: // initiated
+                    log += " Initiated. ThisDn[" + data.thisdn + "]";
+                    break;
+                case ipron.APIEvent.AGENTINREADY: // agent in ready
+                    log += " AgentInReady. ThisDn[" + data.thisdn + "]";
+                    log += " Agent State[" + data.agentstate + "]";
+                    break;
+                case ipron.APIEvent.AGENTOUTREADY: // agent out ready
+                    log += " AgentOutReady. ThisDn[" + data.thisdn + "]";
+                    log += " Agent State[" + data.agentstate + "]";
+                    break;
+                case ipron.APIEvent.MEDIAPLAY: // media play
+                    log += " MediaPlay. ThisDn[" + data.thisdn + "]";
+                    break;
+                case ipron.APIEvent.MEDIACOLLECT: // media collect
+                    log += " MediaCollect. ThisDn[" + data.thisdn + "]";
+                    break;
+                case ipron.APIEvent.BANISHMENT: // banishment
+                    log += " Banishment. ThisDn[" + data.thisdn + "]";
+                    break;
+                case ipron.APIEvent.ACDAGENT_BUSY: // acd agent busy
+                    log += " AcdAgentBusy. ThisDn[" + data.thisdn + "]";
+                    break;
+                case ipron.APIEvent.MCS_REROUTE: // reroute
+                    log += " Reroute. ThisDn[" + data.thisdn + "]";
+                    break;
+                case ipron.APIEvent.VIRTUAL_MEDIA_CREATE: // virtual media create
+                    log += " VirtualMediaCreate. QueueDn[" + data.queuedn + "]";
+                    break;
+                case ipron.APIEvent.VIRTUAL_MEDIA_DISTRIBUTE: // virtual media distribute
+                    log += " VirtualMediaDistribute. QueueDn[" + data.queuedn + "]";
+                    break;
+                case ipron.APIEvent.VIRTUAL_MEDIA_DELETE: // virtual media delete
+                    log += " VirtualMediaDelete. QueueDn[" + data.queuedn + "]";
+                    break;
+                case ipron.APIEvent.HASTATE_CHANGED: // ha state changed
+                    log += " HaStateChanged. HaState[" + data.hastate + "]";
+                    break;
+                case ipron.APIEvent.AGENTBUSY: //Agent Busy
+                    log += " AgentBusy. AgentID[" + data.agentid + "]";
+                    log += " Agent State[" + data.agentstate + "] SubState[" + data.agentstatesub + "]";
+                    break;
+                case ipron.APIEvent.NODE_DR_STATE: 
+                    log += " Node Dr State. Node[" + data.nodeid + "] Down[" + data.drstate + "]";
+                    break;
+                case ipron.APIEvent.AGENTLOGIN_EX: // agent login
+                    log += " AgentLogin_Ex. AgentID[" + data.agentid + "]";
+                    break;
+                case ipron.APIEvent.AGENTLOGIN_DUP: // agent login
+                    log += " AgentLogin_DupChk. AgentID[" + data.agentid + "]";
+                    break;
+                case ipron.APIEvent.GROUPLOGIN: // group login
+                    log += " GroupLogin. AgentID[" + data.groupid + "]";
+                    break;
+                case ipron.APIEvent.GROUPLOGOUT: // group logout
+                    log += " GroupLogout. AgentID[" + data.groupid + "]";
+                    SetAgentColor(data.agentdn, "gray");
+                    break;
+                case ipron.APIEvent.GROUPAGTSTS: //Group Agent State
+                    log += " GroupAgtSts. AgentID[" + data.agentid + "]";
+                    if(data.groupagtstatevoice) {
+                        log += " Agent Voice State[" + data.groupagtstatevoice + "] SubState[" + data.groupagtstatesubvoice + "]";
+                    }
+                    if(data.groupagtstatechat) {
+                        log += " Agent Chat State[" + data.groupagtstatechat + "] SubState[" + data.groupagtstatesubchat + "]";
+                    }
+                    if(data.groupagtstatevvoice) {
+                        log += " Agent Vvoice State[" + data.groupagtstatevvoice + "] SubState[" + data.groupagtstatesubvvoice + "]";
+                    }
+                    if(data.groupagtstatevchat) {
+                        log += " Agent Vchat State[" + data.groupagtstatevchat + "] SubState[" + data.groupagtstatesubvchat + "]";
+                    }
+                    if(data.groupagtstateemail) {
+                        log += " Agent Email State[" + data.groupagtstateemail + "] SubState[" + data.groupagtstatesubemail + "]";
+                    }
+                    if(data.groupagtstatefax) {
+                        log += " Agent Fax State[" + data.groupagtstatefax + "] SubState[" + data.groupagtstatesubfax + "]";
+                    }
+                    if(data.groupagtstatemvoip) {
+                        log += " Agent Mvoip State[" + data.groupagtstatemvoip + "] SubState[" + data.groupagtstatesubmvoip + "]";
+                    }
+                    if(data.groupagtstateweb) {
+                        log += " Agent Web State[" + data.groupagtstateweb + "] SubState[" + data.groupagtstatesubweb + "]";
+                    }
+                    break
+                default:
+                    break;
+            }
+
+            AddEvent(log);
+
+            //if (TextExHandle.value > 0)
+            //    AddEvent(ExtensionData((data)));
+
+
+        }
+
+        function CBFuncResponse(data) {
+            var log = "";
+            var result = 0;
+            switch (data.messagetype) {
+                case ipron.MsgType.AjaxResponse:
+                    log += data.method + " (AJAX Response)";
+                    if (data.method == ipron.Request.OpenServer) {
+                        //TextSessionKey.value = data.key;
+                    }
+
+                    break;
+                case ipron.MsgType.ICResponse:
+                    log += "[" + data.method + "]";
+                    switch (data.method) {
+                        case ipron.APIMethod.REGIADDR_RES: // register
+                            log += " RegisterRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.UNREGIADDR_RES: // unregister
+                            log += " UnregisterRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.GROUP_REGIADDR_RES: // groupregister
+                            log += " GroupRegisterRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.GROUP_UNREGIADDR_RES: // groupunregister
+                            log += " GroupUnregisterRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.MAKECALL_RES: // make call
+                            log += " MakeCallRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.ANSWERCALL_RES: // Answer Call
+                            log += " AnswerCallRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.CLEARCALL_RES: // clear call
+                            log += " ClearCallRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.HOLDCALL_RES: // hold call
+                            log += " HoldCallRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.RETRIEVECALL_RES: // retrieve call
+                            log += " RetrieveCallRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.JOINCALL_RES: // join call
+                            log += " JoinCallRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.AGENT_JOINCALL_RES: // Agent join call
+                            log += " AgentJoinCallRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.GRPICKUP_RES: // group pickup
+                            log += " GroupPickupRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.QUEUE_PICKUP_RES: // queue pickup
+                            log += " QueuePickupRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.SINGLESTEP_TRANSFER_RES: // singlestep transfer
+                            log += " SinglestepTransferRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.MUTE_TRANSFER_RES: // mute transfer
+                            log += " MuteTransferRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.SINGLESTEP_CONFERENCE_RES: // singlestep conference
+                            log += " SinglestepConferenceRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.CONFERENCE_RES: // mute conference call
+                            log += " MuteConferenceRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.DEFLECTCALL_RES: // deflect call
+                            log += " DeflectCallRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.MCS_REROUTE_RES: // mcs reroute
+                            log += " McsRerouteRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.GETCONNECTION_RES: // get connection
+                            log += " GetConnectionRes. Result[" + data.result + "]";
+                            log += " ConnectionId1[" + data.connectionid1 + "]";
+                            log += " ConnectionId2[" + data.connectionid2 + "]";
+                            break;
+                        case ipron.APIMethod.AGENTLOGIN_RES: // agent login
+                            log += " AgentLoginRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.AGENTLOGOUT_RES: // agent logout
+                            log += " AgentLogoutRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.GETSTATE_SUBCODE_RES: // get state sub code
+                            log += " GetStateSubcodeRes. Result[" + data.result + "]";
+                            GetStateSubCode(data.extensionhandle);
+                            break;
+                        case ipron.APIMethod.GETROUTEABLE_RES: // get routeable
+                            log += " GetRouteableRes. Result[" + data.result + "]";
+                            if (data.result == 0)
+                                log += " 통화 가능";
+                            else
+                                log += " 통화 불가능";
+                            break;
+                        case ipron.APIMethod.UPDATE_USERDATA_RES: // update userdata
+                            log += " UpdateUserdataRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.DELETE_KEY_USERDATA_RES: // delete key userdata 
+                            log += " DeleteKeyUserdataRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.DELETE_ALL_USERDATA_RES: // delete all userdata 
+                            log += " DeleteAllUserdataRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.SEND_USEREVENT_RES: // send user event 
+                            log += " SendUserEventRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.GET_USERDATA_RES: // get userdata 
+                            log += " GetUserdataRes. Result[" + data.result + "]";
+                            log += " Conn ID [" + data.connectionid + "]";
+                            log += " State [" + MakeAgentStateString(data.agentstate) + "]";
+                            break;
+                        case ipron.APIMethod.GETCONNSTATE_RES: // get conn state 
+                            log += " GetConnStateRes. Result[" + data.result + "]";
+                            log += " Conn ID [" + data.connectionid + "]";
+                            break;
+                        case ipron.APIMethod.SET_ANI_USERDATA_RES: // set ani userdata 
+                            log += " SetAniUserdataRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.SET_UCID_USERDATA_RES: // set ucid userdata 
+                            log += " SetUcidUserdataRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.SETAGENTSTATE_RES: // set agent state 
+                            log += " SetAgentStateRes. Result[" + data.result + "]";
+                            log += " State [" + MakeAgentStateString(data.agentstate) + "]";
+                            log += " State Sub [" + data.agentstatesub + "]";
+                            break;
+                        case ipron.APIMethod.GETAGENTSTATE_RES: // get agent state 
+                            log += " GetAgentStateRes. Result[" + data.result + "]";
+                            log += " State [" + MakeAgentStateString(data.agentstate) + "]";
+                            log += " State Sub [" + data.agentstatesub + "]";
+                            break;
+                        case ipron.APIMethod.SETAFTCALLSTATE_RES: // set aft state 
+                            log += " SetAftCallStateRes. Result[" + data.result + "]";
+                            log += " State [" + MakeAgentStateString(data.agentstate) + "]";
+                            log += " State Sub [" + data.agentstatesub + "]";
+                            break;
+                        case ipron.APIMethod.SETSKILL_ENABLE_RES: // set skill enable
+                            log += " SetSkillEnableRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.FORCE_SETAGTSTATE_RES: // force set agent state 
+                            log += " ForceSetAgentStateRes. Result[" + data.result + "]";
+                            log += " State [" + MakeAgentStateString(data.agentstate) + "]";
+                            log += " State Sub [" + data.agentstatesub + "]";
+                            break;
+                        case ipron.APIMethod.GETGROUPLIST_RES: // get group list 
+                            log += " GetGroupListRes. Result[" + data.result + "]";
+                            AgentPage.GroupList(data.extensionhandle);
+                            break;
+                        case ipron.APIMethod.GETQUEUELIST_RES: // get queue list 
+                            log += " GetQueueListRes. Result[" + data.result + "]";
+                            AgentPage.QueueList(data.extensionhandle);
+                            break;
+                        case ipron.APIMethod.GETAGENTLIST_RES: // get agent list 
+                            log += " GetAgentListRes. Result[" + data.result + "]";
+                            AgentPage.AgentList(data.extensionhandle);
+                            break;
+                        case ipron.APIMethod.GETAGENTINFO_RES: // get agent info 
+                            log += " GetAgentInfoRes. Result[" + data.result + "]";
+                            if (AgentPage != null) {
+                                AgentPage.AddAgentOutput("Tenant Name : " + data.tenantname);
+                                AgentPage.AddAgentOutput("상태 : " + MakeAgentStateString(data.agentstate));
+                                AgentPage.AddAgentOutput("부가정보코드 : " + data.agentstatesub);
+                                AgentPage.AddAgentOutput("조회 대상 DN : " + data.destdn);
+                                AgentPage.AddAgentOutput("조회 대상 ID : " + data.destagentid);
+                                AgentPage.AddAgentOutput("이름 : " + data.agentname);
+                                AgentPage.AddAgentOutput("Agent Position : " + data.agentposition);
+                                AgentPage.AddAgentOutput("Agent Level : " + data.agentlevel);
+                            }
+                            break;
+                        case ipron.APIMethod.GETAGENT_SKILLLIST_RES: // get agent skill list 
+                            log += " GetAgentSkillListRes. Result[" + data.result + "]";
+                            AgentPage.AgentSkillList(data.extensionhandle);
+                            break;
+                        case ipron.APIMethod.GETAGENT_QUEUELIST_RES: // get agent queue list 
+                            log += " GetAgentQueueListRes. Result[" + data.result + "]";
+                            AgentPage.AgentQueueList(data.extensionhandle);
+                            break;
+                        case ipron.APIMethod.BSR_RES: // bsr 
+                            log += " BsrRes. Result[" + data.result + "]";
+                            AgentPage.BsrList(data.thisdn, data.queuedn, data.destdn, data.nodeid, data.bsrvalue, data.bsrprefix);
+                            break;
+                        case ipron.APIMethod.GETQUEUETRAFFIC_RES: // get queue traffic 
+                            log += " GetQueueTrafficRes. Result[" + data.result + "]";
+                            ReportPage.QueueTraffic(data.svclvltime, data.svclevel, data.waitcount, data.allagentcount, data.readyagentcount, data.inbusyagentcount, data.outbusyagentcount,
+                                                    data.aftworkagentcount, data.notreadyagentcount, data.ringingcount, data.inboundtotal, data.accepttotal, data.abandontotal, data.transbackup,
+                                                    data.answercountavr, data.talktimecountavr, data.waittime, data.maxwaittime, data.minwaittime, data.waittimeavr, data.waittimesum, data.distributewaitcount);
+                            break;
+                        case ipron.APIMethod.GETQUEUEORDER_RES: // get queue order 
+                            log += " GetQueueOrderRes. Result[" + data.result + "]";
+                            ReportPage.GetQueueOrder(data.waitcount);
+                            break;
+                        case ipron.APIMethod.AGENT_REPORT_RES: // agent report 
+                            log += " AgentReportRes. Result[" + data.result + "]";
+                            ReportPage.AgentReport(data.intotal, data.insuccess, data.intalktime, data.outtotal, data.outsuccess, data.outtalktime, data.transfercalls, data.logintime,
+                                                   data.logouttime, data.inintsuc, data.inextsuc, data.inconsuc, data.outintsuc, data.outextsuc, data.outconsuc, data.ringingtime, data.dialingtime,
+                                                   data.readytime, data.notreadytime, data.acwtime);
+                            break;
+                        case ipron.APIMethod.GROUP_REPORT_RES: // group report 
+                            log += " GroupReportRes. Result[" + data.result + "]";
+                            ReportPage.GroupReport(data);
+                            break;
+                        case ipron.APIMethod.QUEUE_REPORT_RES: // queue report 
+                            log += " QueueReportRes. Result[" + data.result + "]";
+                            ReportPage.QueueReport(data);
+                            break;
+                        case ipron.APIMethod.TENANT_REPORT_RES: // tenant report 
+                            log += " TenantReportRes. Result[" + data.result + "]";
+                            ReportPage.TenantReport(data);
+                            break;
+                        case ipron.APIMethod.DNIS_REPORT_RES: // dnis report 
+                            log += " DnisReportRes. Result[" + data.result + "]";
+                            ReportPage.DnisReport(data.inboundtotal, data.abandontotal, data.agttry, data.agttryabandon, data.rejecttotal, data.accepttotal, data.nonsvctotal, data.ivrsvccount, data.waitcount, data.inbusyagentcount, data.ivragtconfcount)
+                            break;
+                        case ipron.APIMethod.AGENTLOGIN_DUP_RES: // agent dup login
+                            log += " AgentDupLoginRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.GROUPLOGIN_RES: // group login
+                            log += " GroupLoginRes. Result[" + data.result + "]";
+                            break;
+                        case ipron.APIMethod.GROUPLOGOUT_RES: // group logout
+                            log += " GroupLogoutRes. Result[" + data.result + "]";
+                            break;
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            AddResponse(log);
+
+        }
+
+        var RowCnt = 20;
+        var ColCnt = 50;
+        var CurRow = 0;
+        var CurCol = 0;
+        var ArrDevice = new Array();
+
+        function AddMonitor(DN) {
+            monitor.rows[CurRow].cells[CurCol].style.backgroundColor = 'gray';
+            monitor.rows[CurRow].cells[CurCol].innerText = DN;
+
+            var Pos = {};
+            Pos.Row = CurRow;
+            Pos.Col = CurCol;
+            ArrDevice["" + DN] = Pos;
+
+            CurCol++
+            if (CurCol >= ColCnt) {
+                CurRow++;
+                CurCol = 0;
+            }
+        }
+
+        function DelMonitor(DN) {
+            var Pos = ArrDevice["" + DN];
+            monitor.rows[Pos.Row].cells[Pos.Col].style.backgroundColor = 'white';
+            monitor.rows[Pos.Row].cells[Pos.Col].innerText = "";
+        }
+
+        function SetAgentColor(DN, color) {
+            var Pos = ArrDevice["" + DN];
+            monitor.rows[Pos.Row].cells[Pos.Col].style.backgroundColor = color;
+        }
+
+        function OnClick(obj) {
+            TextDevice.value = obj.innerHTML;
+        }
+
+        function MakeMonitor() {
+            for (var i = 0; i < RowCnt; i++) {
+                var Row = document.createElement("tr");
+                for (var j = 0; j < ColCnt; j++) {
+                    var Col = document.createElement("td");
+                    Col.setAttribute("onclick", "OnClick(this)");
+                    Row.appendChild(Col);
+                    //var text = "<INPUT TYPE='TEXT' style='width:100%; height:100%; border:0; background-color:gray' NAME='TXT' VALUE='" + i + "-" + j + "' ID='" + i + "-" + j + "' onclick='OnClick(this)' >";
+                    var text = "";// "" + i + "-" + j;
+                    Col.innerHTML = text;
+                }
+                monitor.appendChild(Row);
+            }
+
+            for (var i = 0; i < RowCnt; i++) {
+                for (var j = 0; j < ColCnt; j++) {
+                    monitor.rows[i].cells[j].style.backgroundColor = 'white';
+                    monitor.rows[i].cells[j].width = '2%';
+                    monitor.rows[i].cells[j].height = '5%';
+                    monitor.rows[i].cells[j].style.fontSize='2';
+                }
+            }
+        }
+
+        function ButtonTest_onclick() {
+            
+        }
+
+        function ButtonTest2_onclick() {
+            AddMonitor(1000);
+        }
+        
+        function GetProtocol() {
+          return "https";
+        }
+
+        function ButtonOpenserver_onclick() {
+            ipron.SetProtocol(GetProtocol());
+            ipron.SetServerInfo(TextIP1.value, TextPort.value, TextIP2.value, TextPort.value);
+            ipron.OpenServer("EASD Performance Test App", CBFuncEvent, CBFuncResponse);
+        }
+
+        function ButtonCloseserver_onclick() {
+            ipron.CloseServer();
+        }
+
+        function ButtonRegister_onclick() {
+            ipron.Register(TextStartDN.value, TextTenantName.value);
+        }
+
+        function ButtonUnregister_onclick() {
+            ipron.Unregister(TextStartDN.value, TextTenantName.value);
+        }
+
+        function ButtonGrpRegister_onclick() {
+            ipron.GroupRegister(TextStartDN.value, TextEndDN.value, TextTenantName.value);
+        }
+
+        function ButtonGrpUnregister_onclick() {
+            ipron.GroupUnregister(TextStartDN.value, TextEndDN.value, TextTenantName.value);
+        }
+
+    </script>
+    <style type="text/css">
+        .style1
+        {
+            width: 65px;
+        }
+        .style2
+        {
+            width: 254px;
+        }
+        #Text1
+        {
+            width: 146px;
+        }
+        #Text2
+        {
+            width: 210px;
+        }
+        #Text3
+        {
+            width: 210px;
+        }
+        .style3
+        {
+            width: 136px;
+        }
+        .style4
+        {
+            width: 116px;
+        }
+        #Text4
+        {
+            width: 210px;
+        }
+        #Text5
+        {
+            width: 210px;
+        }
+        #Text6
+        {
+            width: 210px;
+        }
+        .style5
+        {
+            width: 65px;
+            height: 27px;
+        }
+        .style6
+        {
+            width: 254px;
+            height: 27px;
+        }
+        .style7
+        {
+            width: 136px;
+            height: 27px;
+        }
+        .style8
+        {
+            width: 116px;
+            height: 27px;
+        }
+        .style9
+        {
+            height: 27px;
+            width: 133px;
+        }
+        .style10
+        {
+            width: 218px;
+        }
+        .style11
+        {
+            width: 218px;
+            height: 27px;
+        }
+        .style12
+        {
+            width: 125px;
+        }
+        .style13
+        {
+            height: 27px;
+            width: 125px;
+        }
+        .style14
+        {
+            width: 133px;
+        }
+    </style>
+    </head>
+<body>
+    <table align="center" style="width: 100%;" border=0>  
+        <tr>
+        <td style="width:15%;">ICAPI Response</td>
+        <td style="width:35% " align="right">AutoScroll
+        <input id="chkResponseAutoScroll" type="checkbox" checked="checked" name="chkResponseAutoScroll" />
+        <input id="ResponseClear" name="ResponseClear" type="button" value="Clear" onclick="return ResponseClear_onclick()" />
+        </td>
+        <td style="width:15%;">ICAPI Event</td>
+        <td style="width:35%;" align="right">AutoScroll
+        <input id="chkEventAutoScroll" type="checkbox" checked="checked" name="chkEventAutoScroll" />
+        <input id="EventClear" name="EventClear" type="button" value="Clear" onclick="return EventClear_onclick()" />
+        </td>
+        </tr>
+        <tr>
+        <td colspan="2"><textarea id="txtResponse" name="txtResponse" 
+                    style="overflow: auto; visibility: visible; width: 100%; height: 150px;" 
+                    rows="1" ></textarea></td>
+        <td colspan="2"><textarea id="txtEvent" name="txtEvent" 
+                    style="overflow: auto; visibility: visible; width: 100%; height: 150px;" 
+                    rows="1" ></textarea></td>
+        </tr>
+    </table>
+<!--
+     <p>
+        <input id="ButtonTest" type="button" value="TEST" onclick="return ButtonTest_onclick()" /><input 
+             id="ButtonTest2" type="button" value="TEST2" onclick="return ButtonTest2_onclick()" /></p>
+-->
+    <table style="width: 100%;">
+        <tr>
+            <td align="right" class="style1" valign="middle">
+                &nbsp;
+                IP1 :</td>
+            <td class="style2" valign="middle">
+                <input id="TextIP1" type="text" value="100.100.108.141"/>&nbsp;
+                </td>
+            <td class="style3">
+                &nbsp;
+                <input id="ButtonOpenserver" type="button" value="OpenServer" onclick="return ButtonOpenserver_onclick()" /></td>
+            <td align="right" class="style4">
+                DN(StartDN) :</td>
+            <td class="style10">
+                <input id="TextStartDN" type="text" value="3000"/></td>
+            <td class="style12">
+                <input id="ButtonRegister" type="button" value="Register" onclick="return ButtonRegister_onclick()" /></td>
+            <td class="style14">
+                <input id="ButtonUnregister" type="button" value="Unregister" onclick="return ButtonUnregister_onclick()" /></td>
+        </tr>
+        <tr>
+            <td align="right" class="style5" valign="middle">
+                &nbsp;
+                IP2 :</td>
+            <td class="style6" valign="middle">
+                <input id="TextIP2" type="text" value="100.100.108.141"/>&nbsp;
+                </td>
+            <td class="style7">
+                &nbsp;
+                <input id="ButtonCloseserver" type="button" value="CloseServer" onclick="return ButtonCloseserver_onclick()" /></td>
+            <td align="right" class="style8">
+                EndDN :</td>
+            <td class="style11">
+                <input id="TextEndDN" type="text" value="3999"/></td>
+            <td class="style13">
+                <input id="ButtonGrpRegister" type="button" value="GrpRegister" onclick="return ButtonGrpRegister_onclick()" /></td>
+            <td class="style9">
+                <input id="ButtonGrpUnregister" type="button" value="GrpUnregister" onclick="return ButtonGrpUnregister_onclick()" /></td>
+        </tr>
+        <tr>
+            <td align="right" class="style1" valign="middle">
+                &nbsp;
+                PORT :</td>
+            <td class="style2" valign="middle">
+                <input id="TextPort" type="text" value="9203"/>&nbsp;
+                </td>
+            <td class="style3">
+                &nbsp;
+            </td>
+            <td align="right" class="style4">
+                TenantName :</td>
+            <td class="style10">
+                <input id="TextTenantName" type="text" value="기본테넌트"/></td>
+            <td class="style12">
+                &nbsp;</td>
+            <td class="style14">
+                &nbsp;</td>
+        </tr>
+        <tr>
+            <td align="right" class="style1" valign="middle">
+                Device :</td>
+            <td class="style2" valign="middle">
+                <input id="TextDevice" type="text"/></td>
+            <td class="style3">
+                &nbsp;</td>
+            <td align="right" class="style4">
+                &nbsp;</td>
+            <td class="style10">
+                &nbsp;</td>
+            <td class="style12">
+                &nbsp;</td>
+            <td class="style14">
+                &nbsp;</td>
+        </tr>
+    </table>
+
+
+    <table id="monitor" style="width: 100%; height: 60%;" >
+    </table>
+</body>
+</html>

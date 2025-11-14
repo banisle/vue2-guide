@@ -1,0 +1,49 @@
+﻿<html>
+<head>
+    <title></title>
+    <meta http-equiv="X-UA-Compatible" content="IE=11"/>
+    
+    <style type="text/css">
+        body, table
+        {
+            font-family: '맑은 고딕'; 
+            font-size: 12px; 
+            font-weight: lighter; 
+            font-style: normal; 
+            background-color: "#FFFFFF"
+        }
+    </style>
+    
+</head>
+
+<script type="text/javascript">
+
+    var topPage;
+    function OnInit() {
+        topPage = parent.parent.frames['TopFrm'];
+        if (topPage != null)
+            topPage.MainPage = this;
+
+        setTimeout("SetWebAPIVersion()", 1000);
+    }
+
+    function SetWebAPIVersion() {
+        TextWebAPIVersion.value = 'Web API Version v' + topPage.api.GetWebAPIVersion();
+    }
+
+</script>
+
+<body onload="javascript:OnInit()">
+<table width="100%">
+	<tr>
+		<td height="60px"></td>			
+	<tr>
+		<td width="100%" align=center>
+			<h2>IPRON EASD Client Sample Main Page</h2>
+            <input id="TextWebAPIVersion" type="text" style="width: 100%; border: 0; text-align: center; font-weight: bold;"
+             align="middle" value="" /></br>
+		</td>
+	</tr>
+</table>
+</body>
+</html>

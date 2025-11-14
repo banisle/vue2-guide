@@ -1,0 +1,107 @@
+﻿<html>
+<head>
+    <title></title>
+    
+    <style type="text/css">
+        body, table
+        {
+            font-family: '맑은 고딕'; 
+            font-size: 12px; 
+            font-weight: lighter; 
+            font-style: normal; 
+            background-color: "#555555"
+        }
+    </style>    
+    
+    <script language="javascript" type="text/javascript">       
+        
+        function OnInit()
+        {
+        	var FrmBody = parent.frames["BodyFrm"];	        	        	
+        	var topPage = parent.frames['TopFrm'];        	       	
+        	
+        	if(FrmBody != null && topPage != null) {
+        	    if (FrmBody.document.getElementById("FrmMain") != null)
+        	        topPage.MainPage = FrmBody.document.getElementById("FrmMain").contentWindow;
+
+        		if(FrmBody.document.getElementById("FrmAgent") != null)
+        			topPage.AgentPage = FrmBody.document.getElementById("FrmAgent").contentWindow;
+        			
+        		if(FrmBody.document.getElementById("FrmFeature") != null)
+        		 	topPage.FeaturePage = FrmBody.document.getElementById("FrmFeature").contentWindow;
+        		 	
+	        	if(FrmBody.document.getElementById("FrmExtension") != null)
+	        		topPage.ExtensionPage = FrmBody.document.getElementById("FrmExtension").contentWindow;
+	        		
+	        	if(FrmBody.document.getElementById("FrmReport") != null)
+	        	    topPage.ReportPage = FrmBody.document.getElementById("FrmReport").contentWindow;
+
+	        	if (FrmBody.document.getElementById("FrmAdvanceList") != null)
+	        	    topPage.AdvanceListPage = FrmBody.document.getElementById("FrmAdvanceList").contentWindow;
+
+	        	if (FrmBody.document.getElementById("FrmSubscribe") != null)
+	        	    topPage.SubscribePage = FrmBody.document.getElementById("FrmSubscribe").contentWindow;
+	        }
+        }
+        
+        function ShowContents(FrmID) 
+        { 
+        	var FrmBody = parent.frames["BodyFrm"];
+        	
+        	if(FrmBody.document.getElementById(FrmID).height > 0)
+        	{
+        		return;
+        	}
+        	
+        	FrmBody.document.getElementById("FrmMain").height= 0 + "px";
+        	FrmBody.document.getElementById("FrmAgent").height= 0 + "px";
+        	FrmBody.document.getElementById("FrmFeature").height= 0 + "px";
+        	FrmBody.document.getElementById("FrmReport").height= 0 + "px";
+        	FrmBody.document.getElementById("FrmExtension").height = 0 + "px";
+        	FrmBody.document.getElementById("FrmAdvanceList").height = 0 + "px";
+        	FrmBody.document.getElementById("FrmSubscribe").height = 0 + "px";
+        	        	
+        	FrmBody.document.getElementById(FrmID).height= 600 + "px";
+        	
+        }
+        
+    </script>
+</head>
+
+<body onload=javascript:OnInit() style="background-color: #555555;">
+  
+    <table width="100%" border="0" cellspacing="5">
+        <tr>
+            <td width="9%" align="right" style="color: #FFFFFF;">
+                MENU
+            </td>
+            <td width="10%">
+                <input id="btnMain" type="button" style="width: 100%;" value="MainPage" onclick="ShowContents('FrmMain')">
+            </td>
+            <td width="10%">
+                <input id="btnAgent" type="button" style="width: 100%;" value="AgentPage" onclick="ShowContents('FrmAgent')">
+            </td>
+            <td width="10%">
+                <input id="btnFeature" type="button" style="width: 100%;" value="FeaturePage" onclick="ShowContents('FrmFeature')">
+            </td>
+            <td width="10%">
+                <input id="btnReport" type="button" style="width: 100%;" value="ReportPage" onclick="ShowContents('FrmReport')">
+            </td>
+            <td width="10%">
+                <input id="btnAdvanceList" type="button" style="width: 100%;" value="AdvanceListPage" onclick="ShowContents('FrmAdvanceList')">
+            </td>
+            <td width="10%">
+                <input id="btnSubscribe" type="button" style="width: 100%;" value="SubscribePage" onclick="ShowContents('FrmSubscribe')">
+            </td>
+            <td width="10%">
+                <input id="btnExtension" type="button" style="width: 100%;" value="ExtensionPage"
+                    onclick="ShowContents('FrmExtension')">
+            </td>
+            <td width="41">
+            </td>
+        </tr>
+    </table>
+
+
+</body>
+</html>

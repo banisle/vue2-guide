@@ -1,0 +1,97 @@
+@charset "utf-8";
+
+/*
+ * Copyright (C) 2009 Apple Inc.  All rights reserved.
+ * Copyright (C) 2009 Google Inc.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+ * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+/* Chromium default media controls */
+/* WARNING: This css file can only style <audio> and <video> elements */
+.pl-audiowave{
+  position: relative;
+  width: 100%;
+  padding-right: 16px;
+  display: flex;
+  align-items: center;
+  & > div{
+    display: flex;
+    align-items: center;
+    height: 36px;
+    & > div {
+      height: 30px;
+    }
+  }
+  &::after{
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border: 1px solid #dbdbdb;
+    border-radius: 16px;
+    pointer-events: none;
+  }
+  audio {
+    width: 220px;
+    height: 30px;
+    &::-webkit-media-controls-panel{
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      /* We use flex-start here to ensure that the play button is visible even
+       * if we are too small to show all controls.
+       */
+      justify-content: flex-start;
+      -webkit-user-select: none;
+      position: relative;
+      width: 100%;
+      z-index: 0;
+      overflow: hidden;
+      text-align: right;
+      bottom: auto;
+      height: 30px;
+      background-color: #FFF;
+      border-radius: 5px;
+      /* The duration is also specified in MediaControlElements.cpp and LayoutTests/media/media-controls.js */
+      transition: opacity 0.3s;
+    }
+    &::-webkit-media-controls-timeline{
+      display: none;
+    }
+    &::-webkit-media-controls-volume-slider{
+    }
+    &::-webkit-media-controls-enclosure {
+      overflow:hidden;
+    }
+    &::-webkit-media-controls-panel {
+      width: 30px;
+    }
+  }
+
+  &.no-wave{
+    height: 36px;
+    padding: 16px;
+  }
+}
+
+

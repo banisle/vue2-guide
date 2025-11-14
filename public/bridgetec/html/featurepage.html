@@ -1,0 +1,159 @@
+﻿<html>
+<head>
+    <title></title>
+    <meta http-equiv="X-UA-Compatible" content="IE=11"/> 
+    <style type="text/css">
+        body, table, input
+        {        		
+            font-family: '맑은 고딕'; 
+            font-size: 12px; 
+            font-weight: lighter; 
+            font-style: normal; 
+            background-color: "#FFFFFF"
+        }
+    </style>
+</head>
+
+<script type="text/javascript">
+    var topPage = parent.parent.frames['TopFrm'];    
+
+
+		function OnInit() 
+    {    
+      var topPage = parent.frames['TopFrm'];        	       	    
+        	
+    	if(topPage != null)    	     	    			
+    			topPage.FeaturePage = this;    		                
+    }
+
+    function GetMediaType() {
+        var nType = 0;
+
+        switch (MediaType.selectedIndex) {
+            case 0: nType = 0; break;  // Voice
+            case 1: nType = 1; break;  // Data
+            case 2: nType = 2; break;  // Image
+            case 3: nType = 3; break;  // Audio
+            case 4: nType = 4; break;  // Other
+            case 5: nType = 5; break;  // Chat
+            case 6: nType = 6; break;  // E-Mail
+            case 7: nType = 7; break;  // Message
+            case 8: nType = 8; break;  // IM
+            case 9: nType = 9; break;  // Web
+            case 10: nType = 10; break;  // MMS
+        }
+        return nType;
+    }
+
+    function GetAutoDelete() {
+        var nResult = 0;
+
+        switch (AutoDelete.selectedIndex) {
+            case 0: nResult = 0; break;  // False
+            case 1: nResult = 1; break;  // True
+        }
+        return nResult;
+    }
+
+    function GetDistribute() {
+        var nResult = 0;
+
+        switch (Distribute.selectedIndex) {
+            case 0: nResult = 0; break;  // False
+            case 1: nResult = 1; break;  // True
+        }
+        return nResult;
+    }
+
+    function ButtonAttach_onclick() {
+        topPage.api.MediaAttach(TextCallAgentDN.value, topPage.TextCallId.value, 0);
+    }
+    function ButtonDetach_onclick() {
+        topPage.api.MediaDeattach(TextCallAgentDN.value, topPage.TextCallId.value, 0);
+    }
+    function ButtonPlay_onclick() {
+        topPage.api.MediaPlay(TextCallAgentDN.value, topPage.TextCallId.value, TextCallMediaID.value, Number(TextCallDuration.value), 0);
+    }
+    function ButtonCollect_onclick() {
+        topPage.api.MediaCollect(TextCallAgentDN.value, topPage.TextCallId.value, TextCallMediaID.value, Number(TextCallDuration.value), TextCallTermDigits.value, 
+                                Number(TextCallMinDigits.value), Number(TextCallMaxDigits.value), 0);
+    }
+    function ButtonDTMFPlay_onclick() {
+        topPage.api.DtmfPlay(TextCallAgentDN.value, topPage.TextCallId.value, TextCallDuration.value, TextCallPauseDuration.value,
+        TextCallPlayDigits.value, 0);
+    }   
+
+</script>
+
+<body onload="javascript:OnInit()">		
+    <table width="100%" frame="box" cellspacing="10">
+        <tr>
+        	<td align="left" width="15%">
+        		<h3>* FEATURE MENU</h3>    
+        		</td>
+            <td align="right" width="35%" valign="bottom">
+                Agent DN :
+                <input id="TextCallAgentDN" type="text" align="middle" style="width: 50%;" value=""/></br>
+                Media ID :
+                <input id="TextCallMediaID" type="text" align="middle" style="width: 50%;" value=""/></br>
+                Duration :
+                <input id="TextCallDuration" type="text" align="middle" style="width: 50%;" value="0"/></br>
+                Pause Duration :
+                <input id="TextCallPauseDuration" type="text" align="middle" style="width: 50%;" value="0"/></br>
+                Term Digits :
+                <input id="TextCallTermDigits" type="text" align="middle" style="width: 50%;" value=""/></br>
+                Min Digits :
+                <input id="TextCallMinDigits" type="text" align="middle" style="width: 50%;" value="0"/></br>             
+                Max Digits :
+                <input id="TextCallMaxDigits" type="text" align="middle" style="width: 50%;" value="0"/></br>
+                Play Digits :
+                <input id="TextCallPlayDigits" type="text" align="middle" style="width: 50%;" value="0"/></br>
+                <input id="ButtonCallAttach" style="width: 32%" type="button" value="Attach" onclick="return ButtonAttach_onclick()" />
+                <input id="ButtonCallDetach" style="width: 32%" type="button" value="Detach" onclick="return ButtonDetach_onclick()" /></br>
+                <input id="ButtonCallPlay" style="width: 32%" type="button" value="Play" onclick="return ButtonPlay_onclick()" />
+                <input id="ButtonCallCollect" style="width: 32%" type="button" value="Collect" onclick="return ButtonCollect_onclick()" /></br>
+                <input id="ButtonDTMFPlay" style="width: 32%" type="button" value="DTMF" onclick="return ButtonDTMFPlay_onclick()" />
+            </td>
+            <td align="right" width="50%" valign="bottom">
+                UCID :
+                <input id="TextUCID" type="text" align="middle" style="width: 40%;" value=""/></br>
+                Queue DN :
+                <input id="TextCallQueueDN" type="text" align="middle" style="width: 40%;" value=""/></br>
+                Ani Number :
+                <input id="TextCallAniNumber2" type="text" align="middle" style="width: 40%;" value=""/></br>
+                DNIS :
+                <input id="TextCallDnis" type="text" align="middle" style="width: 40%;" value=""/></br>
+                Media Type :
+                <select id="MediaType" name="MediaType" style="width: 40%;" align="middle">
+                        <option selected="selected">Voice</option>			 
+						<option>Data</option>		 
+						<option>Image</option>			 		 
+						<option>Audio</option>		 
+						<option>Other</option>
+                        <option>Chat</option>
+						<option>E-Mail</option>
+						<option>Message</option>			 
+						<option>IM</option>
+                        <option>Web</option>
+                        <option>MMS</option>
+                </select></br>
+                Option :
+                <input id="TextCallOption" type="text" align="middle" style="width: 40%;" value=""/></br>
+                Timeout :
+                <input id="TextCallTimeout" type="text" align="middle" style="width: 40%;" value="0"/></br>
+                Auto Delete :
+                <select id="AutoDelete" name="AutoDelete" style="width: 40%;" align="middle">
+                        <option>False</option>			 
+						<option>True</option>		 
+                </select></br>
+                Distribute :
+                <select id="Distribute" name="Distribute" style="width: 40%;" align="middle">
+                        <option>False</option>			 
+						<option>True</option>		 
+                </select></br>
+            </td>    
+        </tr>
+    </table>
+    
+</body>
+</html>

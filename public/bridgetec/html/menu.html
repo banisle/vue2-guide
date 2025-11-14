@@ -1,0 +1,105 @@
+﻿<html>
+<head>
+    <title></title>
+    <!--<meta http-equiv="X-UA-Compatible" content="IE=11"/> -->
+    <script language="javascript" type="text/javascript">
+
+        function btnMain_onclick() {
+            document.getElementById("frmMain").style.visibility = 'visible';
+            document.getElementById("frmMain").style.width = '100%';
+            document.getElementById("frmMain").style.height = '90%';
+            document.getElementById("frmAgent").style.visibility = 'hidden';
+            document.getElementById("frmAgent").style.width = '0%';
+            document.getElementById("frmAgent").style.height = '0%';
+            document.getElementById("frmFeature").style.visibility = 'hidden';
+            document.getElementById("frmFeature").style.width = '0%';
+            document.getElementById("frmFeature").style.height = '0%';
+            document.getElementById("frmReport").style.visibility = 'hidden';
+            document.getElementById("frmReport").style.width = '0%';
+            document.getElementById("frmReport").style.height = '0%';
+            document.getElementById("frmExtension").style.visibility = 'hidden';
+            document.getElementById("frmExtension").style.width = '0%';
+            document.getElementById("frmExtension").style.height = '0%';
+        }
+
+        function btnAgent_onclick() {        	
+        		
+            document.getElementById("frmMain").height= 0 + "px";
+            document.getElementById("frmAgent").height= 570 + "px" ;
+            document.getElementById("frmFeature").height = 0 + "px"
+            document.getElementById("frmReport").height = 0 + "px";
+            document.getElementById("frmExtension").height = 0 + "px";
+            
+        }
+
+        function btnFeature_onclick() {
+            document.getElementById("frmMain").style.visibility = 'hidden';
+            document.getElementById("frmMain").style.width = '0%';
+            document.getElementById("frmMain").style.height = '0%';
+            document.getElementById("frmAgent").style.visibility = 'hidden';
+            document.getElementById("frmAgent").style.width = '0%';
+            document.getElementById("frmAgent").style.height = '0%';
+            document.getElementById("frmFeature").style.visibility = 'visible';
+            document.getElementById("frmFeature").style.width = '100%';
+            document.getElementById("frmFeature").style.height = '90%';
+            document.getElementById("frmReport").style.visibility = 'hidden';
+            document.getElementById("frmReport").style.width = '0%';
+            document.getElementById("frmReport").style.height = '0%';
+            document.getElementById("frmExtension").style.visibility = 'hidden';
+            document.getElementById("frmExtension").style.width = '0%';
+            document.getElementById("frmExtension").style.height = '0%';
+        }
+
+        function btnReport_onclick() {
+            document.getElementById("frmMain").style.visibility = 'hidden';
+            document.getElementById("frmMain").style.width = '0%';
+            document.getElementById("frmMain").style.height = '0%';
+            document.getElementById("frmAgent").style.visibility = 'hidden';
+            document.getElementById("frmAgent").style.width = '0%';
+            document.getElementById("frmAgent").style.height = '0%';
+            document.getElementById("frmFeature").style.visibility = 'hidden';
+            document.getElementById("frmFeature").style.width = '0%';
+            document.getElementById("frmFeature").style.height = '0%';
+            document.getElementById("frmReport").style.visibility = 'visible';
+            document.getElementById("frmReport").style.width = '100%';
+            document.getElementById("frmReport").style.height = '90%';
+            document.getElementById("frmExtension").style.visibility = 'hidden';
+            document.getElementById("frmExtension").style.width = '0%';
+            document.getElementById("frmExtension").style.height = '0%';
+        }
+
+        function btnExtension_onclick() {
+            document.getElementById("frmMain").style.visibility = 'hidden';
+            document.getElementById("frmMain").style.width = '0%';
+            document.getElementById("frmMain").style.height = '0%';
+            document.getElementById("frmAgent").style.visibility = 'hidden';
+            document.getElementById("frmAgent").style.width = '0%';
+            document.getElementById("frmAgent").style.height = '0%';
+            document.getElementById("frmFeature").style.visibility = 'hidden';
+            document.getElementById("frmFeature").style.width = '0%';
+            document.getElementById("frmFeature").style.height = '0%';
+            document.getElementById("frmReport").style.visibility = 'hidden';
+            document.getElementById("frmReport").style.width = '0%';
+            document.getElementById("frmReport").style.height = '0%';
+            document.getElementById("frmExtension").style.visibility = 'visible';
+            document.getElementById("frmExtension").style.width = '100%';
+            document.getElementById("frmExtension").style.height = '90%';
+        }
+
+    </script>
+</head>
+<body>
+<p>
+    <input id="btnMain" type="button" value="MainPage" onclick="return btnMain_onclick()" />
+    <input id="btnAgent" type="button" value="AgentPage" onclick="return btnAgent_onclick()" />
+    <input id="btnFeature" type="button" value="FeaturePage" onclick="return btnFeature_onclick()" />
+    <input id="btnReport" type="button" value="ReportPage" onclick="return btnReport_onclick()" />
+    <input id="btnExtension" type="button" value="Extension" onclick="return btnExtension_onclick()" />
+</p>
+    <iframe id="frmMain" src="main.html" width="100%" height="90%" style="visibility:visible;"></iframe>
+    <p><iframe id="frmAgent" src="agentpage.html" width="0%" height="0%" style="visibility:hidden;"></iframe></p>
+    <p><iframe id="frmFeature" src="featurepage.html" width="0%" height="0%" style="visibility:hidden;"></iframe></p>
+    <p><iframe id="frmReport" src="reportpage.html" width="0%" height="0%" style="visibility:hidden;"></iframe></p>
+    <p><iframe id="frmExtension" src="extension.html" width="0%" height="0%" style="visibility:hidden;"></iframe></p>
+</body>
+</html>

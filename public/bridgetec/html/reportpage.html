@@ -1,0 +1,1005 @@
+﻿<html>
+<head>
+    <title></title>
+    <meta http-equiv="X-UA-Compatible" content="IE=11"/> 
+    
+    <style type="text/css">
+        body, table, input
+        {        		
+            font-family: '맑은 고딕'; 
+            font-size: 12px; 
+            font-weight: lighter; 
+            font-style: normal; 
+            background-color: "#FFFFFF"
+        }
+    </style>
+</head>
+
+<script type="text/javascript">
+    var topPage = parent.parent.frames['TopFrm'];
+    var result;
+
+
+    function OnInit() 
+    {    
+      var topPage = parent.frames['TopFrm'];        	       	    
+        	
+    	if(topPage != null)
+    	    topPage.ReportPage = this;
+    }
+
+    function AddReportOutput(str) {
+        txtReportOutput.value += str + '\n';
+        txtReportOutput.scrollTop = txtReportOutput.scrollHeight;
+    }
+
+    function GroupList(handle) {
+        var i = 0, j = 0;
+        var nRecord = 0; nField = 0;
+        var strKey, strValue;
+        var str = "";
+
+        nRecord = topPage.api.EXTGetRecordCount(handle);
+
+        for (i = 0; i < nRecord; i++) {
+            nField = topPage.api.EXTGetValueCountForRecord(handle, i);
+            //console.log(topPage.api.EXTGetValueCountForRecord(i));
+
+            strKey = topPage.api.EXTGetKey(handle, i);
+
+            str = "Group ID : " + strKey + " | ";
+
+            for (j = 0; j < nField; j++) {
+                strValue = topPage.api.EXTGetValueForRecord(handle, i, j);
+
+                if (j == 0) {
+                    str += "Name : " + strValue;
+                }
+                else {
+                    str += " | Unknown Data : " + strValue;
+                }
+            }
+            AddReportOutput(str);
+        }
+    }
+
+    function QueueList(handle) {
+        var i = 0, j = 0;
+        var nRecord = 0; nField = 0;
+        var strKey, strValue;
+        var str = "";
+
+        nRecord = topPage.api.EXTGetRecordCount(handle);
+
+        for (i = 0; i < nRecord; i++) {
+            nField = topPage.api.EXTGetValueCountForRecord(handle, i);
+
+            strKey = topPage.api.EXTGetKey(handle, i);
+
+            str = "Queue ID : " + strKey + " | ";
+
+            for (j = 0; j < nField; j++) {
+                strValue = topPage.api.EXTGetValueForRecord(handle, i, j);
+                switch (j) {
+                    case 0: str += "DN : " + strValue + " | "; break;
+                    case 1: str += "Name : " + strValue; break;
+                    default: str += " | Unknown Data : " + strValue; break;
+                }
+            }
+            AddReportOutput(str);
+        }
+    }
+
+    function TenantList(handle) {
+        var i = 0, j = 0;
+        var nRecord = 0; nField = 0;
+        var strKey, strValue;
+        var str = "";
+
+        nRecord = topPage.api.EXTGetRecordCount(handle);
+
+        for (i = 0; i < nRecord; i++) {
+            nField = topPage.api.EXTGetValueCountForRecord(handle, i);
+
+            strKey = topPage.api.EXTGetKey(handle, i);
+
+            str = "Tenant ID : " + strKey + " | ";
+
+            for (j = 0; j < nField; j++) {
+                strValue = topPage.api.EXTGetValueForRecord(handle, i, j);
+                switch (j) {
+                    case 0: str += "Name : " + strValue; break;
+                    default: str += " | Unknown Data : " + strValue; break;
+                }
+            }
+            AddReportOutput(str);
+        }
+    }
+
+    function AgentList(handle) {
+        var i = 0, j = 0;
+        var nRecord = 0; nField = 0;
+        var strKey, strValue;
+        var str = "";
+
+        nRecord = topPage.api.EXTGetRecordCount(handle);
+
+        for (i = 0; i < nRecord; i++) {
+            nField = topPage.api.EXTGetValueCountForRecord(handle, i);
+
+            strKey = topPage.api.EXTGetKey(handle, i);
+
+            str = "ID : " + strKey + " | ";
+
+            for (j = 0; j < nField; j++) {
+                strValue = topPage.api.EXTGetValueForRecord(handle, i, j);
+                switch (j) {
+                    case 0: str += "할당DN : " + strValue + " | "; break;  // 할당 DN
+                    case 1: str += "Login DN : " + strValue + " | "; break;  // Login DN
+                    case 2: str += "Agent Name : " + strValue + " | "; break;  // Login DN
+                    case 3: str += "상태 : " + topPage.MakeAgentStateString(Number(strValue)) + " | "; break;  // State
+                    case 4: str += "부가코드 : " + strValue + " | "; break;   // State Subcode
+                    case 5: str += "상태 유지 시간 : " + strValue + " | "; break;
+                    case 6: str += "IN/OUT : " + GetInout(Number(strValue)) + " | "; break;
+                    case 7: str += "Skill Level : " + strValue; break;
+                    default: str += "|Unknown : " + strValue; break;
+                }
+            }
+            AddReportOutput(str);
+        }
+    }
+
+    function AgentNodeList(handle) {
+        var i = 0, j = 0;
+        var nRecord = 0; nField = 0;
+        var strKey, strValue;
+        var str = "";
+
+        nRecord = topPage.api.EXTGetRecordCount(handle);
+
+        for (i = 0; i < nRecord; i++) {
+            nField = topPage.api.EXTGetValueCountForRecord(handle, i);
+
+            strKey = topPage.api.EXTGetKey(handle, i);
+
+            if (nField == 1) {
+                strValue = topPage.api.EXTGetValueForRecord(handle, i, 0);
+                str = strKey + ' : ' + strValue;
+                AddReportOutput(str);
+                continue;
+            }
+
+            str = "ID : " + strKey + " | ";
+
+            for (j = 0; j < nField; j++) {
+                strValue = topPage.api.EXTGetValueForRecord(handle, i, j);
+                switch (j) {
+                    case 0: str += "Group Id : " + strValue + " | "; break;  // 할당 DN
+                    case 1: str += "Master QueueId : " + strValue + " | "; break;  // Login DN
+                    case 2: str += "Node Id : " + strValue + " | "; break;  // Login DN
+                    case 3: str += "Tenant Id : " + strValue + " | "; break;  // State
+                    case 4: str += "Login DN : " + strValue + " | "; break;   // State Subcode
+                    case 5: str += "Name : " + strValue + " | "; break;
+                    case 6: str += "Login ID : " + strValue + " | "; break;
+                    case 7: str += "상태유지시간 : " + strValue; break;
+                    default: str += "|Unknown : " + strValue; break;
+                }
+            }
+            AddReportOutput(str);
+        }
+    }
+
+    function AgentQueueList(handle) {
+        var i = 0, j = 0;
+        var nRecord = 0; nField = 0;
+        var strKey, strValue;
+        var str = "";
+
+        nRecord = topPage.api.EXTGetRecordCount(handle);
+
+        for (i = 0; i < nRecord; i++) {
+            nField = topPage.api.EXTGetValueCountForRecord(handle, i);
+
+            strKey = topPage.api.EXTGetKey(handle, i);
+
+            str = "Queue ID : " + strKey + " | ";
+
+            for (j = 0; j < nField; j++) {
+                strValue = topPage.api.EXTGetValueForRecord(handle, i, j);
+                switch (j) {
+                    case 0: str += "Name : " + strValue + " | "; break;
+                    case 1: str += "DN : " + strValue + " | "; break;
+                    case 2: str += "SkillID : " + strValue; break;
+                    default: str += " | Unknown Data : " + strValue; break;
+                }
+            }
+            AddReportOutput(str);
+        }
+    }
+
+    function AgentSkillList(handle) {
+        var i = 0, j = 0;
+        var nRecord = 0; nField = 0;
+        var strKey, strValue;
+        var str = "";
+
+        nRecord = topPage.api.EXTGetRecordCount(handle);
+
+        for (i = 0; i < nRecord; i++) {
+            nField = topPage.api.EXTGetValueCountForRecord(handle, i);
+
+            strKey = topPage.api.EXTGetKey(handle, i);
+
+            str = "Skill ID : " + strKey + " | ";
+
+            for (j = 0; j < nField; j++) {
+                strValue = topPage.api.EXTGetValueForRecord(handle, i, j);
+                switch (j) {
+                    case 0: str += "Name : " + strValue + " | "; break;
+                    case 1: str += "Enable : " + strValue; break;
+                    default: str += " | Unknown Data : " + strValue; break;
+                }
+            }
+            AddReportOutput(str);
+        }
+    }
+
+    function GroupSkillList(handle) {
+        var i = 0, j = 0;
+        var nRecord = 0; nField = 0;
+        var strKey, strValue;
+        var str = "";
+
+        nRecord = topPage.api.EXTGetRecordCount(handle);
+
+        for (i = 0; i < nRecord; i++) {
+            nField = topPage.api.EXTGetValueCountForRecord(handle, i);
+
+            strKey = topPage.api.EXTGetKey(handle, i);
+
+            str = "Skill ID : " + strKey + " | ";
+
+            for (j = 0; j < nField; j++) {
+                strValue = topPage.api.EXTGetValueForRecord(handle, i, j);
+                switch (j) {
+                    case 0: str += "Name : " + strValue + " | "; break;
+                    case 1: str += "Enable : " + strValue; break;
+                    default: str += " | Unknown Data : " + strValue; break;
+                }
+            }
+            AddReportOutput(str);
+        }
+    }
+
+    function GetDeviceList(handle) {
+        var i = 0, j = 0;
+        var nRecord = 0; nField = 0;
+        var strKey, strValue;
+        var str = "";
+
+        nRecord = topPage.api.EXTGetRecordCount(handle);
+
+        for (i = 0; i < nRecord; i++) {
+            nField = topPage.api.EXTGetValueCountForRecord(handle, i);
+
+            strKey = topPage.api.EXTGetKey(handle, i);
+
+            str = "DN : " + strKey + " | ";
+
+            for (j = 0; j < nField; j++) {
+                strValue = topPage.api.EXTGetValueForRecord(handle, i, j);
+                if (j == 0) {
+                    str += "Status : " + strValue;
+                }
+                else {
+                    str += " | Unknown Data : " + strValue;
+                }
+            }
+            AddReportOutput(str);
+        }
+    }
+
+    function BsrList(this_dn, queue_dn, dest_dn, node_id, bsr_value, bsr_prefix) {
+        var msg = "";
+
+        msg += "BSR List \n";
+        msg += "This DN : " + this_dn.toString() + "\n";
+        msg += "Queue DN : " + queue_dn.toString() + "\n";
+        msg += "Dest DN : " + dest_dn.toString() + "\n";
+        msg += "Dest Node ID : " + node_id.toString() + "\n";
+        msg += "BSR 결과 측정치 : " + bsr_value.toString() + "\n";
+        msg += "BSR 결과 Prefix : " + bsr_prefix.toString() + "\n";
+
+        AddReportOutput(msg);
+    }
+
+    function CategoryList(handle) {
+        var i = 0, j = 0;
+        var nRecord = 0; nField = 0;
+        var strKey, strValue;
+        var str = "";
+
+        nRecord = topPage.api.EXTGetRecordCount(handle);
+
+        for (i = 0; i < nRecord; i++) {
+            nField = topPage.api.EXTGetValueCountForRecord(handle, i);
+
+            strKey = topPage.api.EXTGetKey(handle, i);
+
+            str = "Skill ID : " + strKey + " | ";
+
+            for (j = 0; j < nField; j++) {
+                strValue = topPage.api.EXTGetValueForRecord(handle, i, j);
+                switch (j) {
+                    case 0: str += "Id : " + strValue + " | "; break;
+                    case 1: str += "Queue Dn : " + strValue; break;
+                    case 2: str += "Name : " + strValue; break;
+                    default: str += " | Unknown Data : " + strValue; break;
+                }
+            }
+            AddReportOutput(str);
+        }
+    }
+
+    function CategoryInfo(data) {
+        var msg = "";
+
+        msg += "Tenant Name : " + data.tenantname.toString() + "\n";
+        msg += "Queue Dn : " + data.queuedn.toString() + "\n";
+        msg += "Private Data : " + data.privatedata.toString() + "\n";
+        msg += "Chat Bcuse Allow : " + data.chatbcuseallow.toString() + "\n";
+        msg += "Chat Allow : " + data.chatallow.toString() + "\n";
+        msg += "Vvoice Bcust Allow : " + data.vvoicebcustallow.toString() + "\n";
+        msg += "Vvoice Allow : " + data.vvoiceallow.toString() + "\n";
+        msg += "Vchat Bcust Allow : " + data.vchatbcustallow.toString() + "\n";
+        msg += "Vchat Allow : " + data.vchatallow.toString() + "\n";
+        msg += "Email Bcust Allow : " + data.emailbcustallow.toString() + "\n";
+        msg += "Email Allow : " + data.emailallow.toString() + "\n";
+        msg += "Fax Bcust Allow : " + data.faxbcustallow.toString() + "\n";
+        msg += "Fax Allow : " + data.faxallow.toString() + "\n";
+        msg += "Voip Bcust Allow : " + data.voipbcustallow.toString() + "\n";
+        msg += "Voip Allow : " + data.voipallow.toString() + "\n";
+        msg += "Mvoip Bcust Allow : " + data.mvoipbcustallow.toString() + "\n";
+        msg += "Mvoip Allow : " + data.mvoipallow.toString() + "\n";
+        msg += "Web Bcust Allow : " + data.webbcustallow.toString() + "\n";
+        msg += "Web Allow : " + data.weballow.toString() + "\n";
+        msg += "Category Id : " + data.categoryid.toString() + "\n";
+        msg += "Category Name : " + data.categoryname.toString() + "\n";
+        msg += "Banner Url : " + data.bannerurl.toString() + "\n";
+        msg += "Word Filter : " + data.wordfilter.toString() + "\n";
+        msg += "Consult Time Use : " + data.consulttimeuse.toString() + "\n";
+        msg += "Consult Time Max : " + data.consulttimemax.toString() + "\n";
+        msg += "Consult Alert Time : " + data.consultalerttime.toString() + "\n";
+        msg += "Auto Close Use : " + data.autocloseuse.toString() + "\n";
+        msg += "Auto Close Time : " + data.autoclosetime.toString() + "\n";
+        msg += "Auto Close Msg : " + data.autoclosemsg.toString() + "\n";
+        msg += "Survey Use : " + data.surveyuse.toString() + "\n";
+        msg += "Survey Id : " + data.surveyid.toString() + "\n";
+
+        AddReportOutput(msg);
+    }
+
+    function GetAgentStateList() {
+        var nState = 0;
+
+        switch (AgentState2.selectedIndex) {
+            case 0: nState = 0; break;  // Null
+            case 1: nState = 10; break; // Logout
+            case 2: nState = 20; break; // Login
+            case 3: nState = 30; break; // Not Ready
+            case 4: nState = 40; break; // Ready
+            case 5: nState = 41; break; // Inbound Ready
+            case 6: nState = 42; break; // Outbound Ready
+            case 7: nState = 50; break; // Busy
+            case 8: nState = 60; break; // AftWork
+        }
+        return nState;
+    }
+
+    function GetMediaType1() {
+        var nResult = 0;
+
+        switch (MediaType1.selectedIndex) {
+            case 0: nResult = 0; break;  // Voice
+            case 1: nResult = 10; break;  // Chat
+            case 2: nResult = 20; break;  // Video Voice
+            case 3: nResult = 30; break;  // Video Chat
+            case 4: nResult = 40; break;  // Email
+            case 5: nResult = 50; break;  // Fax
+            case 6: nResult = 61; break;  // MVoip
+            case 7: nResult = 80; break;  // Web
+        }
+        return nResult;
+    }
+
+    function GetMediaType2() {
+        var nResult = 0;
+
+        switch (MediaType2.selectedIndex) {
+            case 0: nResult = 0; break;  // Voice
+            case 1: nResult = 10; break;  // Chat
+            case 2: nResult = 20; break;  // Video Voice
+            case 3: nResult = 30; break;  // Video Chat
+            case 4: nResult = 40; break;  // Email
+            case 5: nResult = 50; break;  // Fax
+            case 6: nResult = 61; break;  // MVoip
+            case 7: nResult = 80; break;  // Web
+        }
+        return nResult;
+    }
+
+    function GetMediaType3() {
+        var nResult = 0;
+
+        switch (MediaType3.selectedIndex) {
+            case 0: nResult = 0; break;  // Voice
+            case 1: nResult = 10; break;  // Chat
+            case 2: nResult = 20; break;  // Video Voice
+            case 3: nResult = 30; break;  // Video Chat
+            case 4: nResult = 40; break;  // Email
+            case 5: nResult = 50; break;  // Fax
+            case 6: nResult = 61; break;  // MVoip
+            case 7: nResult = 80; break;  // Web
+        }
+        return nResult;
+    }
+
+    function GetDistribute() {
+        var nResult = 0;
+
+        switch (Distribute.selectedIndex) {
+            case 0: nResult = 1; break;  // True
+            case 1: nResult = 0; break;  // False
+        }
+        return nResult;
+    }
+
+    function GetQueueOrder(wait_count) {
+        var msg = "";
+
+        msg += "Queue Order \n";
+        msg += "Wait Count : " + wait_count.toString() + "\n";
+
+        AddReportOutput(msg);
+    }
+
+    function GetQueueOrderEx(local_wait_count, bsr_wait_count) {
+        var msg = "";
+
+        msg += "Queue Order Ex \n";
+        msg += "Local Wait Count : " + local_wait_count.toString() + "\n";
+        msg += "BSR Wait Count : " + bsr_wait_count.toString() + "\n";
+
+        AddReportOutput(msg);
+    }
+
+    function GetCallPosition(local_wait_count, bsr_wait_count) {
+        var msg = "";
+
+        msg += "GetCallPosition Resposne\n";
+        msg += "Local Wait Count : " + local_wait_count.toString() + "\n";
+        msg += "BSR Wait Count : " + bsr_wait_count.toString() + "\n";
+
+        AddReportOutput(msg);
+    }
+
+    function GetInout(nState) {
+        switch (nState) {
+            case 0: return "NULL";
+            case 1: return "IN";
+            case 2: return "OUT";
+            default: return "Unknown(" + nState.toString() + ")";
+        }
+    }
+
+    function QueueTraffic(svc_lvl_time, svc_level, wait_count, all_agent_count, login_agent_count, ready_agent_count, inbusy_agent_count, outbusy_agent_count, aft_agent_count, notready_agent_count, ringing_count, inbound_total, accept_total, abandon_total, trans_backup, answer_count_avr, talktime_count_avr, wait_time, max_wait_time, min_wait_time, wait_time_avr, wait_time_sum, distribute_wait_coun) {
+
+        var msg = "";
+
+        msg += "Queue Traffic \n";
+        msg += "서비스 레벨 타임 : " + svc_lvl_time.toString() + "\n";
+        msg += "서비스 레벨 : " + svc_level.toString() + "\n";
+        msg += "대기호 : " + wait_count.toString() + "\n";
+        msg += "전체 상담원 : " + all_agent_count.toString() + "\n";
+        msg += "로그인 중인 상담원 : " + login_agent_count.toString() + "\n";
+        msg += "대기중인 상담원 : " + ready_agent_count.toString() + "\n";
+        msg += "Inbusy 상담원 : " + inbusy_agent_count.toString() + "\n";
+        msg += "Outbusy 상담원 : " + outbusy_agent_count.toString() + "\n";
+        msg += "후 처리 중인 상담원 : " + aft_agent_count.toString() + "\n";
+        msg += "자리 비움 중인 상담원 : " + notready_agent_count.toString() + "\n";
+        msg += "벨 울림 상태 수 : " + ringing_count.toString() + "\n";
+        msg += "당일 큐 인입호 : " + inbound_total.toString() + "\n";
+        msg += "당일 큐 응대호 : " + accept_total.toString() + "\n";
+        msg += "당일 큐 포기호 : " + abandon_total.toString() + "\n";
+        msg += "Backup Queue DN 전환 호 수 : " + trans_backup.toString() + "\n";
+        msg += "상담원 별 평균 응대호 : " + answer_count_avr.toString() + "\n";
+        msg += "상담원 별 평균 통화 시간 : " + talktime_count_avr.toString() + "\n";
+        msg += "예상 대기 시간 : " + wait_time.toString() + "\n";
+        msg += "최장 대기 시간 : " + max_wait_time.toString() + "\n";
+        msg += "최소 대기 시간 : " + min_wait_time.toString() + "\n";
+        msg += "대기 시간 평균 : " + wait_time_avr.toString() + "\n";
+        msg += "대기 시간 합계 : " + wait_time_sum.toString() + "\n";
+        msg += "분배 대기호 수 : " + distribute_wait_coun.toString() + "\n";
+
+        AddReportOutput(msg);
+    }
+
+    function AgentReport(in_total, in_success, in_talk_time, out_total, out_success, out_talk_time, transfer_calls, login_time, logout_time, in_int_suc, in_ext_suc, in_con_suc, out_int_suc, out_ext_suc, out_con_suc, ringing_time, dialing_time, ready_time, notready_time, acw_time) {
+        var msg = "";
+
+        msg += "Agent Report \n";
+        msg += "Inbound Total : " + in_total.toString() + "\n";
+        msg += "Inbound 성공 : " + in_success.toString() + "\n";
+        msg += "Inbound 통화시간 : " + in_talk_time.toString() + "\n";
+        msg += "Outbound Total : " + out_total.toString() + "\n";
+        msg += "Outbound 성공 : " + out_success.toString() + "\n";
+        msg += "Outbound 통화시간 : " + out_talk_time.toString() + "\n";
+        msg += "전환 호 합계 : " + transfer_calls.toString() + "\n";
+        msg += "최근 로그인 시각 : " + login_time + "\n";
+        msg += "최근 로그아웃 시각 : " + logout_time + "\n";
+        msg += "내선 인바운드 통화수 : " + in_int_suc.toString() + "\n";
+        msg += "국선 인바운드 통화수 : " + in_ext_suc.toString() + "\n";
+        msg += "협의 인바운드 통화수 : " + in_con_suc.toString() + "\n";
+        msg += "내선 아웃바운드 통화수 : " + out_int_suc.toString() + "\n";
+        msg += "국선 아웃바운드 통화수 : " + out_ext_suc.toString() + "\n";
+        msg += "협의 아웃바운드 통화수 : " + out_con_suc.toString() + "\n";
+        msg += "벨울림 시간 : " + ringing_time.toString() + "\n";
+        msg += "다이얼링 시간 : " + dialing_time.toString() + "\n";
+        msg += "수신대기상태 시간 : " + ready_time.toString() + "\n";
+        msg += "자리비움상태 시간 : " + notready_time.toString() + "\n";
+        msg += "후 처리상태 시간 : " + acw_time.toString() + "\n";
+
+        AddReportOutput(msg);
+    }
+
+    function AgentReportEx(in_total, in_success, in_talk_time, out_total, out_success, out_talk_time, transfer_calls, login_time, logout_time, in_int_suc, in_ext_suc, in_con_suc, out_int_suc, out_ext_suc, out_con_suc, ringing_time, dialing_time, ready_time, notready_time, acw_time, notready_cnt, ready_cnt, acw_cnt, trans_in_talktime, trans_in_suc) {
+        var msg = "";
+
+        msg += "Agent Report \n";
+        msg += "Inbound Total : " + in_total.toString() + "\n";
+        msg += "Inbound 성공 : " + in_success.toString() + "\n";
+        msg += "Inbound 통화시간 : " + in_talk_time.toString() + "\n";
+        msg += "Outbound Total : " + out_total.toString() + "\n";
+        msg += "Outbound 성공 : " + out_success.toString() + "\n";
+        msg += "Outbound 통화시간 : " + out_talk_time.toString() + "\n";
+        msg += "전환 호 합계 : " + transfer_calls.toString() + "\n";
+        msg += "최근 로그인 시각 : " + login_time + "\n";
+        msg += "최근 로그아웃 시각 : " + logout_time + "\n";
+        msg += "내선 인바운드 통화수 : " + in_int_suc.toString() + "\n";
+        msg += "국선 인바운드 통화수 : " + in_ext_suc.toString() + "\n";
+        msg += "협의 인바운드 통화수 : " + in_con_suc.toString() + "\n";
+        msg += "내선 아웃바운드 통화수 : " + out_int_suc.toString() + "\n";
+        msg += "국선 아웃바운드 통화수 : " + out_ext_suc.toString() + "\n";
+        msg += "협의 아웃바운드 통화수 : " + out_con_suc.toString() + "\n";
+        msg += "벨울림 시간 : " + ringing_time.toString() + "\n";
+        msg += "다이얼링 시간 : " + dialing_time.toString() + "\n";
+        msg += "수신대기상태 시간 : " + ready_time.toString() + "\n";
+        msg += "자리비움상태 시간 : " + notready_time.toString() + "\n";
+        msg += "후 처리상태 시간 : " + acw_time.toString() + "\n";
+        msg += "수신대기 횟수 : " + ready_cnt.toString() + "\n";
+        msg += "자리비움 횟수 : " + notready_cnt.toString() + "\n";
+        msg += "후 처리 횟수 : " + acw_cnt.toString() + "\n";
+        msg += "호전환 수신 통화시간 : " + trans_in_talktime.toString() + "\n";
+        msg += "호전환 수신 통화호 : " + trans_in_suc.toString() + "\n";
+
+        AddReportOutput(msg);
+    }
+
+    function GroupReport(data) {
+        var msg = "";
+        var szExt = "";
+
+        msg += "Group Report \n";
+        msg += "응답호 대기시간 평균 : " + data.answaitavr + "\n";
+        msg += "내선 인바운드 인입 호 수 : " + data.ininttot + "\n";
+        msg += "내선 인바운드 성공 통화 수 : " + data.inintsuc + "\n";
+        msg += "국선 인바운드 인입 호 수 : " + data.inexttot + "\n";
+        msg += "국선 인바운드 성공 통화 수 : " + data.inextsuc + "\n";
+        msg += "내선 아웃바운드 통화 시도 수 : " + data.outinttot + "\n";
+        msg += "내선 아웃바운드 성공 통화 수 : " + data.outintsuc + "\n";
+        msg += "국선 아웃바운드 통화 시도 수 : " + data.outexttot + "\n";
+        msg += "국선 아웃바운드 성공 통화 수 : " + data.outextsuc + "\n";
+        msg += "내선 인바운드 통화 시간 합계 : " + data.ininttalktime + "\n";
+        msg += "국선 인바운드 통화 시간 합계 : " + data.inexttalktime + "\n";
+        msg += "전체 상담원 수 : " + data.allagentcount + "\n";
+        msg += "로그인 상담원 수 : " + data.loginagentcount + "\n";
+        msg += "수신대기 상담원 수 : " + data.readyagentcount + "\n";
+        msg += "벨울림 상담원 수 : " + data.ringingcount + "\n";
+        msg += "다이얼링 상담원 수 : " + data.dialingcount + "\n";
+        msg += "내선 인바운드 통화 중 상담원 수 : " + data.ibintbusyagt + "\n";
+        msg += "국선 인바운드 통화 중 상담원 수 : " + data.ibextbusyagt + "\n";
+        msg += "내선 아웃바운드 통화 중 상담원 수: " + data.obintbusyagt + "\n";
+        msg += "국선 아웃바운드 통화 중 상담원 수 : " + data.obextbusyagt + "\n";
+        msg += "후처리 상담원 수 : " + data.aftworkagentcount + "\n";
+        msg += "자리비움 상담원 수 : " + data.notreadyagentcount + "\n";
+
+        AddReportOutput(msg);
+    }
+
+    function QueueReport(data) {
+        var msg = "";
+        var szExt = "";
+
+        msg += "Queue Report \n";
+        msg += "대기호 : " + data.waitcount + "\n";
+        msg += "현재 대기호 최대 대기 시간 : " + data.maxwaittime + "\n";
+        msg += "현재 대기호 대기시간 합계 : " + data.waittimesum + "\n";
+        msg += "인입호 : " + data.inboundtotal + "\n";
+        msg += "응답호 : " + data.accepttotal + "\n";
+        msg += "Non-Service 처리호 : " + data.nonsvctotal + "\n";
+        msg += "서비스 레벨 이내 응답호 : " + data.svcaccepttotal + "\n";
+        msg += "서비스 레벨 이내 포기호 : " + data.svcabandontotal + "\n";
+        msg += "포기호 : " + data.abandontotal + "\n";
+        msg += "거부호 : " + data.rejecttotal + "\n";
+        msg += "응답률 : " + data.acceptratio + "\n";
+        msg += "내선 아웃바운드 통화 시도 수 : " + data.outinttot + "\n";
+        msg += "내선 아웃바운드 성공 통화 수 : " + data.outintsuc + "\n";
+        msg += "국선 아웃바운드 통화 시도 수 : " + data.outexttot + "\n";
+        msg += "국선 아웃바운드 성공 통화 수 : " + data.outextsuc + "\n";
+        msg += "응답호 총 통화시간 : " + data.accepttalktimesum + "\n";
+        msg += "서비스 레벨 타임 : " + data.svclvltime + "\n";
+        msg += "서비스 레벨 : " + data.svclevel + "\n";
+        msg += "전체 상담원 수 : " + data.allagentcount + "\n";
+        msg += "로그인 상담원 수 : " + data.loginagentcount + "\n";
+        msg += "수신대기 상담원 수 : " + data.readyagentcount + "\n";
+        msg += "벨울림 상담원 수 : " + data.ringingcount + "\n";
+        msg += "다이얼링 상담원 수 : " + data.dialingcount + "\n";
+        msg += "내선 인바운드 통화 중 상담원 수 : " + data.ibintbusyagt + "\n";
+        msg += "국선 인바운드 통화 중 상담원 수 : " + data.ibextbusyagt + "\n";
+        msg += "내선 아웃바운드 통화 중 상담원 수 : " + data.obintbusyagt + "\n";
+        msg += "국선 아웃바운드 통화 중 상담원 수 : " + data.obextbusyagt + "\n";
+        msg += "후처리 상담원 수 : " + data.aftworkagentcount + "\n";
+        msg += "자리비움 상담원 수 : " + data.notreadyagentcount + "\n";
+
+        AddReportOutput(msg);
+    }
+
+    function TenantReport(data) {
+        var msg = "";
+        var szExt = "";
+
+        msg += "Tenant Report \n";
+        msg += "현재 인바운드 큐 대기호 : " + data.waitcount + "\n";
+        msg += "현재 인바운드 대기호 최대 대기 시간 : " + data.maxwaittime + "\n";
+        msg += "현재 인바운드 대기호 대기시간 합계 : " + data.waittimesum + "\n";
+        msg += "IVR 인입호 : " + data.ivrtotal + "\n";
+        msg += "IVR 포기호 : " + data.ivrabandon + "\n";
+        msg += "IVR 전환호 : " + data.ivrdodtrns + "\n";
+        msg += "인바운드 큐 인입호 : " + data.ivricqtrns + "\n";
+        msg += "인바운드 큐 응답호 : " + data.icqaccept + "\n";
+        msg += "인바운드 큐 서비스 레벨 이내 응답호 : " + data.icqsvclvlaccept + "\n";
+        msg += "인바운드 큐 서비스 레벨 이내 포기호 : " + data.icqsvclvlabandon + "\n";
+        msg += "인바운드 큐 포기호 : " + data.icqabandon + "\n";
+        msg += "인바운드 큐 거부호 : " + data.icqreject + "\n";
+        msg += "Non-Service 처리호 : " + data.nonsvctotal + "\n";
+        msg += "국선 아웃바운드 시도 호 : " + data.outexttot + "\n";
+        msg += "국선 아웃바운드 성공 호 : " + data.outextsuc + "\n";
+        msg += "인바운드 큐 응답률 : " + data.icqacceptratio + "\n";
+        msg += "인바운드 통화 시간 합계 : " + data.intalktime + "\n";
+        msg += "아웃바운드 통화 시간 합계 : " + data.outtalktime + "\n";
+        msg += "서비스 레벨 : " + data.svclevel + "\n";
+        msg += "전체 상담원 수 : " + data.allagentcount + "\n";
+        msg += "로그인 상담원 수 : " + data.loginagentcount + "\n";
+        msg += "수신대기 상담원 수 : " + data.readyagentcount + "\n";
+        msg += "벨울림 상담원 수 : " + data.ringingcount + "\n";
+        msg += "다이얼링 상담원 수 : " + data.dialingcount + "\n";
+        msg += "내선 인바운드 통화 중 상담원 수 : " + data.ibintbusyagt + "\n";
+        msg += "국선 인바운드 통화 중 상담원 수 : " + data.ibextbusyagt + "\n";
+        msg += "내선 아웃바운드 통화 중 상담원 수 : " + data.obintbusyagt + "\n";
+        msg += "국선 아웃바운드 통화 중 상담원 수 : " + data.obextbusyagt + "\n";
+        msg += "후처리 상담원 수 : " + data.aftworkagentcount + "\n";
+        msg += "자리비움 상담원 수 : " + data.notreadyagentcount + "\n";
+
+        AddReportOutput(msg);
+    }
+
+    function DnisReport(inbound_total, abandon_total, agt_try, agt_try_abandon, reject_total, accept_total, non_svc_total, ivr_svc_count, wait_count, inbusy_agent_count, ivr_agt_conf_count) {
+        var msg = "";
+
+        msg += "Dnis Report \n";
+        msg += "인입호 수 : " + inbound_total + "\n";
+        msg += "포기호 수 : " + abandon_total + "\n";
+        msg += "상담원 연결 시도호 수 : " + agt_try + "\n";
+        msg += "상담원 연결 시도후 포기호 수 : " + agt_try_abandon + "\n";
+        msg += "상담원 거부호 수 : " + reject_total + "\n";
+        msg += "상담원 연결 성공호 수 : " + accept_total + "\n";
+        msg += "Non-Service 처리호 수 : " + non_svc_total + "\n";
+        msg += "현재 IVR 청취 고객호 수 : " + ivr_svc_count + "\n";
+        msg += "현재 CTI Queue 대기호 수 : " + wait_count + "\n";
+        msg += "현재 상담원 통화호 수 : " + inbusy_agent_count + "\n";
+        msg += "현재 상담원 IVR 3자 통화호 수 : " + ivr_agt_conf_count + "\n";
+
+        AddReportOutput(msg);
+    }
+
+    function GetDeviceType2() {
+        var nResult = 0;
+
+        switch (DeviceType2.selectedIndex) {
+            case 0: nResult = 10; break;  // DN_KIND_AGENT
+            case 1: nResult = 11; break;  // DN_KIND_IEADN
+            case 2: nResult = 20; break;  // DN_KIND_IVR
+            case 3: nResult = 30; break;  // DN_KIND_IVRQ
+            case 4: nResult = 40; break;  // DN_KIND_ICQ
+            case 5: nResult = 50; break;  // DN_KIND_ETC
+        }
+        return nResult;
+    }
+
+    function ButtonGetGroupList_onclick() {
+        topPage.api.GetGroupList(TextAgtTenantName2.value, TextAgtPrivateData2.value);
+    }
+    function ButtonGetQueueList_onclick() {
+        topPage.api.GetQueueList(TextAgtTenantName2.value, TextAgtPrivateData2.value);
+    }
+    function ButtonGetAgentList_onclick() {
+        topPage.api.GetAgentList(TextAgtTenantName2.value, TextAgtGroupID.value, TextAgtQueueDN.value, TextAgtPrivateData2.value, GetAgentStateList(), GetMediaType3());
+    }
+    function ButtonGetAgentInfo_onclick() {
+        topPage.api.GetAgentInfo(TextAgtTenantName2.value, TextAgtDestAgentID2.value, TextAgtPrivateData2.value);
+    }
+    function ButtonGetAgentInfoEx_onclick() {
+        topPage.api.GetAgentInfoEx(TextAgtTenantName2.value, TextAgtDestAgentID2.value, TextAgtDestDN.value, TextAgtPBXLoginDN.value, TextAgtPrivateData2.value);
+    }
+    function ButtonGetAgentSkillList_onclick() {
+        topPage.api.GetAgentSkillList(TextAgtTenantName2.value, TextAgtDestAgentID2.value);
+    }
+    function ButtonGetAgentQueueList_onclick() {
+        topPage.api.GetAgentQueueList(TextAgtTenantName2.value, TextAgtDestAgentID2.value);
+    }
+    function ButtonGetCategoryList_onclick() {
+        topPage.api.GetCategoryList(TextAgtTenantName2.value, TextAgtPrivateData2.value);
+    }
+    function ButtonGetCategoryInfo_onclick() {
+        topPage.api.GetCategoryInfo(TextAgtTenantName2.value, TextAgtPrivateData2.value, TextAgtCategoryId.value);
+    }
+    function ButtonGetAgentMasterQueueInfo_onclick() {
+        topPage.api.GetAgentMasterQueueInfo(TextAgtTenantName2.value, TextAgtDestDN.value, TextAgtDestAgentID2.value, TextAgtPrivateData2.value, GetMediaType3());
+    }
+    function ButtonGetQueueTraffic_onclick() {
+        topPage.api.GetQueueTraffic(TextRptTenantName.value, TextRptQueueDN.value, Number(TextRptSkillID.value), TextRptPrivateData.value, 0, TextMediaSet1.value);
+    }
+    function ButtonGetQueueTrafficEx_onclick() {
+        topPage.api.GetQueueTrafficEx(TextRptTenantName.value, TextRptQueueDN.value, Number(TextRptSkillID.value), TextRptPrivateData.value, 0, TextMediaSet1.value);
+    }
+    function ButtonGetQueueOrder_onclick() {
+        topPage.api.GetQueueOrder(TextRptTenantName.value, TextRptQueueDN.value, Number(TextRptSkillID.value), Number(TextRptCheckPriority.value), TextRptPrivateData.value, 0, GetMediaType1());
+    }
+    function ButtonGetQueueOrderEx_onclick() {
+        topPage.api.GetQueueOrderEx(TextRptTenantName.value, Number(TextRptCallId.value), TextRptQueueDN.value, Number(TextRptSkillID.value), Number(TextRptCheckPriority.value), TextRptPrivateData.value, 0, GetMediaType1());
+    }
+    function ButtonAgentReport_onclick() {
+        topPage.api.AgentReport(TextRptAgentID.value, TextRptTenantName2.value, GetMediaType2());
+    }
+    function ButtonRptAgentReportEx_onclick() {
+        topPage.api.AgentReportEx(TextRptAgentID.value, TextRptTenantName2.value, GetMediaType2());
+    }
+    function ButtonTenantReport_onclick() {
+        topPage.api.TenantReport(TextRptTenantName2.value, GetMediaType2());
+    }
+    function ButtonGroupReport_onclick() {
+        topPage.api.GroupReport(TextRptTenantName2.value, TextRptGroupIDSet.value, GetMediaType2());
+    }
+    function ButtonQueueReport_onclick() {
+        topPage.api.QueueReport(TextRptTenantName2.value, TextRptQueueDNSet.value, GetMediaType2());
+    }
+    function ButtonDnisReport_onclick() {
+        topPage.api.DNISReport(TextRptDnisSet.value, TextRptPrivateData2.value);
+    }
+    function ButtonBsr_onclick() {
+        topPage.api.BSR(TextAgtThisDN.value, TextAgtQueueDN2.value);
+    }
+    function ButtonMediaDnd_onclick() {
+        topPage.api.MediaDndReq(TextRptTenantName2.value, TextRptAgentID.value, GetMediaType2(), GetDistribute());
+    }
+
+    function ButtonGetGroupSkillList_onclick() {
+        topPage.api.GetGroupSkillList(TextAgtTenantName2.value, TextAgtGroupID.value);
+    }
+
+    function ButtonGetDeviceList_onclick() {
+        topPage.api.GetDeviceList(TextAgtTenantName2.value, GetDeviceType2());
+    }
+
+    function ButtonGetTenantList_onclick() {
+        topPage.api.GetTenantList();
+    }
+
+    function ButtonGetCallPosition_onclick() {
+        topPage.api.GetCallPosition(Number(TextRptCallId.value));
+    }
+
+    function ButtonGetNodeAgentList_onclick() {
+        topPage.api.GetNodeAgentList(GetAgentStateList(), TextAgtTenantName2.value, txtDiGroupIdSet.value, txtSkillIdSet.value, GetMediaType3(), Number(txtPage.value));
+    }
+
+    function ButtonGetIRState_onclick() {
+        topPage.api.GetIRState(TextAgtTenantName2.value, TextAgtDestDN.value, TextAgtPrivateData2.value, Number(txtNodeId.value));
+    }
+
+    function ButtonGetDRState_onclick() {
+        topPage.api.GetDRState(TextAgtPrivateData2.value, Number(txtNodeId.value));
+    }
+
+    function sleep(num) {	//[1/1000초]
+        var now = new Date();
+        var stop = now.getTime() + num;
+        while (true) {
+            now = new Date();
+            if (now.getTime() > stop) return;
+        }
+    }
+
+</script>
+
+<body onload="javascript:OnInit()">	
+    <table width="100%" frame="box" cellspacing="10">
+    	<tr>
+    		<td align="left" valign="top" width="120px" rowspan="2">
+    			<p>&nbsp;
+    			<h3>* REPORT MENU</h3>    
+    		</td>
+    	
+            <td rowspan="2">
+                <textarea id="txtReportOutput" name="txtReportOutput" 
+                    style="overflow: scroll; visibility: visible; width: 100%; height: 420px; font-family: '맑은 고딕';" 
+                    rows="1" ></textarea>
+            </td>
+            <td align="right" width="25%" valign="bottom">
+                Group ID :
+                <input id="TextAgtGroupID" type="text" align="middle" style="width: 40%;" value=""/></br>
+                Queue DN :
+                <input id="TextAgtQueueDN" type="text" align="middle" style="width: 40%;" value=""/></br>
+                Tenant Name :
+                <input id="TextAgtTenantName2" type="text" align="middle" style="width: 40%;" value=""/></br>
+                Agent State :
+                <select id="AgentState2" name="AgentState2" style="width: 40%;" align="middle">
+                        <option>NULL</option>			 
+						<option>Logout</option>		 
+						<option>Login</option>			 
+						<option>Not Ready</option>		 
+						<option selected="selected">Ready</option>		 
+						<option>INBOUND Ready</option>
+						<option>OUTBOUND Ready</option>
+						<option>Busy</option>			 
+						<option>AftWork</option>
+                </select></br>               
+                Dest Agent ID :
+                <input id="TextAgtDestAgentID2" type="text" align="middle" style="width: 40%;" value=""/></br>      
+                Dest Dn :
+                <input id="TextAgtDestDN" type="text" align="middle" style="width: 40%;" value=""/></br>                
+                Pbx Login Dn :
+                <input id="TextAgtPBXLoginDN" type="text" align="middle" style="width: 40%;" value=""/></br>                          
+                Private Data :
+                <input id="TextAgtPrivateData2" type="text" align="middle" style="width: 40%;" value=""/></br>
+                Media Type :
+                <select id="MediaType3" name="MediaType3" style="width: 40%;" align="middle">
+                    	<option value="Voice"> Voice </option>
+                        <option value="Chat"> Chat </option>
+	                    <option value="Video Voice"> Video Voice </option>
+                        <option value="Video Chat"> Video Chat </option>
+                        <option value="Email"> Email </option>
+                        <option value="Fax"> Fax </option>
+                        <option value="MVoip"> MVoip </option>
+                        <option value="Web"> Web </option>
+                </select></br> 
+                Category Id :
+                <input id="TextAgtCategoryId" type="text" align="middle" style="width: 40%;" value=""/></br>
+                Device Type :
+                <select id="DeviceType2" name="DeviceType2" style="width: 40%;" align="middle">		 
+                    <option>AGENT</option>		 
+                    <option>IEADN</option>			 
+                    <option>IVR</option>		 	 
+                    <option>IVRQ</option>
+                    <option>ICQ</option>
+                    <option>ETC</option>			 
+                </select></br> 
+                SkillIdSet : <input id="txtSkillIdSet" type="text" align="middle" style="width: 40%;" value=""/></br>
+                GroupIdSet : <input id="txtDiGroupIdSet" type="text" align="middle" style="width: 40%;" value=""/></br>
+                Page : <input id="txtPage" type="text" align="middle" style="width: 40%;" value="0"/></br>
+                Node ID : <input id="txtNodeId" type="text" align="middle" style="width: 40%;" value="1" /></br>
+
+                <input id="ButtonAgtGetAgentInfo" style="width: 40%" type="button" value="GetAgentInfo" onclick="return ButtonGetAgentInfo_onclick()" />
+                <input id="ButtonAgtGetAgentInfoEx" style="width: 40%" type="button" value="GetAgentInfoEx" onclick="return ButtonGetAgentInfoEx_onclick()" /></br>
+                <input id="ButtonAgtGetGroupList" style="width: 40%" type="button" value="GetGroupList" onclick="return ButtonGetGroupList_onclick()" />
+                <input id="ButtonAgtGetQueueList" style="width: 40%" type="button" value="GetQueueList" onclick="return ButtonGetQueueList_onclick()" /></br>
+                <input id="ButtonAgtGetAgentList" style="width: 40%" type="button" value="GetAgentList" onclick="return ButtonGetAgentList_onclick()" />
+                <input id="ButtonAgtGetAgentSkillList" style="width: 40%" type="button" value="GetAgentSkillList" onclick="return ButtonGetAgentSkillList_onclick()" /></br>
+                <input id="ButtonAgtGetAgentQueueList" style="width: 40%" type="button" value="GetAgentQueueList" onclick="return ButtonGetAgentQueueList_onclick()" />
+                <input id="ButtonGetCategoryList" style="width: 40%" type="button" value="GetCategoryList" onclick="return ButtonGetCategoryList_onclick()" /></br>
+                <input id="ButtonGetCategoryInfo" style="width: 40%" type="button" value="GetCategoryInfo" onclick="return ButtonGetCategoryInfo_onclick()" />
+                <input id="ButtonGetAgentMasterQueueInfo" style="width: 40%" type="button" value="GetAgentmasterQueueInfo" onclick="return ButtonGetAgentMasterQueueInfo_onclick()" /></br>
+                <input id="ButtonGetTenantList" style="width: 40%" type="button" value="GetTenantList" onclick="return ButtonGetTenantList_onclick()" />
+                <input id="ButtonGetGroupSkillList" style="width: 40%" type="button" value="GetGroupSkillList" onclick="return ButtonGetGroupSkillList_onclick()" /></br>
+                <input id="ButtonGetNodeAgentList" style="width: 40%" type="button" value="GetNodeAgentList" onclick="return ButtonGetNodeAgentList_onclick()" />
+                <input id="ButtonAgtGetDeviceList" style="width: 40%" type="button" value="GetDeviceList" onclick="return ButtonGetDeviceList_onclick()" /></br>
+                <input id="ButtonGetIRState" style="width: 40%" type="button" value="GetIRState" onclick="return ButtonGetIRState_onclick()" />
+                <input id="ButtonGetDRState" style="width: 40%" type="button" value="GetDRState" onclick="return ButtonGetDRState_onclick()" />
+            </td>
+            
+            <td align="right" width="25%" valign="bottom">
+                Tenant Name :
+                <input id="TextRptTenantName2" type="text" align="middle" style="width: 40%;" value="기본테넌트"/></br>
+                Agent ID :
+                <input id="TextRptAgentID" type="text" align="middle" style="width: 40%;" value="agent01"/></br>
+                Group ID Set :
+                <input id="TextRptGroupIDSet" type="text" align="middle" style="width: 40%;" value=""/></br>
+                Queue DN Set :
+                <input id="TextRptQueueDNSet" type="text" align="middle" style="width: 40%;" value=""/></br>               
+                DNIS Set :
+                <input id="TextRptDnisSet" type="text" align="middle" style="width: 40%;" value=""/></br>               
+                Private Data :
+                <input id="TextRptPrivateData2" type="text" align="middle" style="width: 40%;" value=""/></br>
+                Media Type :
+                <select id="MediaType2" name="MediaType2" style="width: 40%;" align="middle">
+                    	<option value="Voice"> Voice </option>
+                        <option value="Chat"> Chat </option>
+	                    <option value="Video Voice"> Video Voice </option>
+                        <option value="Video Chat"> Video Chat </option>
+                        <option value="Email"> Email </option>
+                        <option value="Fax"> Fax </option>
+                        <option value="MVoip"> MVoip </option>
+                        <option value="Web"> Web </option>
+                </select></br> 
+                Media Set :
+                <input id="TextMediaSet2" type="text" align="middle" style="width: 40%;" value=""/></br>
+                Distribute :
+                <select id="Distribute" name="Distribute" style="width: 40%;" align="middle">
+                    	<option value="True"> True </option>
+                        <option value="False"> False </option>
+                </select></br> 
+
+                <input id="ButtonRptAgentReport" style="width: 40%" type="button" value="AgentReport" onclick="return ButtonAgentReport_onclick()" />
+                <input id="ButtonRptTenantReport" style="width: 40%" type="button" value="TenantReport" onclick="return ButtonTenantReport_onclick()" /></br>
+                <input id="ButtonRptGroupReport" style="width: 40%" type="button" value="GroupReport" onclick="return ButtonGroupReport_onclick()" />
+                <input id="ButtonRptQueueReport" style="width: 40%" type="button" value="QueueReport" onclick="return ButtonQueueReport_onclick()" /></br>
+                <input id="ButtonRptDnisReport" style="width: 40%" type="button" value="DnisReport" onclick="return ButtonDnisReport_onclick()" />     
+                <input id="ButtonMediaDnd" style="width: 40%" type="button" value="MediaDnd" onclick="return ButtonMediaDnd_onclick()" /></br>
+                <input id="ButtonRptAgentReportEx" style="width: 40%" type="button" value="AgentReportEx" onclick="return ButtonRptAgentReportEx_onclick()" />
+            </td>
+        </tr>
+        <tr>            
+            <td align="right" width="25%" valign="bottom">
+                Queue DN :
+                <input id="TextRptQueueDN" type="text" align="middle" style="width: 40%;" value=""/></br>
+                Tenant Name :
+                <input id="TextRptTenantName" type="text" align="middle" style="width: 40%;" value=""/></br>
+                Call ID :
+                <input id="TextRptCallId" type="text" align="middle" style="width: 40%;" value=""/></br>
+                Skill ID :
+                <input id="TextRptSkillID" type="text" align="middle" style="width: 40%;" value="0"/></br>
+                Private Data :
+                <input id="TextRptPrivateData" type="text" align="middle" style="width: 40%;" value=""/></br>
+                Check Priority :
+                <input id="TextRptCheckPriority" type="text" align="middle" style="width: 40%;" value="0"/></br>
+                Media Type :
+                <select id="MediaType1" name="MediaType1" style="width: 40%;" align="middle">
+                    	<option value="Voice"> Voice </option>
+                        <option value="Chat"> Chat </option>
+	                    <option value="Video Voice"> Video Voice </option>
+                        <option value="Video Chat"> Video Chat </option>
+                        <option value="Email"> Email </option>
+                        <option value="Fax"> Fax </option>
+                        <option value="MVoip"> MVoip </option>
+                        <option value="Web"> Web </option>
+                </select></br> 
+                Media Set :
+                <input id="TextMediaSet1" type="text" align="middle" style="width: 40%;" value=""/></br>
+                <input id="ButtonRptGetCallPosition" style="width: 40%" type="button" value="GetCallPosition" onclick="return ButtonGetCallPosition_onclick()" />
+                <input id="ButtonRptGetQueueTraffic" style="width: 40%" type="button" value="GetQueueTraffic" onclick="return ButtonGetQueueTraffic_onclick()" /></br>
+                <input id="ButtonRptGetQueueOrder" style="width: 40%" type="button" value="GetQueueOrder" onclick="return ButtonGetQueueOrder_onclick()" />
+                <input id="ButtonRptGetQueueOrderEx" style="width: 40%" type="button" value="GetQueueOrderEx" onclick="return ButtonGetQueueOrderEx_onclick()" /></br>
+                <input id="ButtonRptGetQueueTrafficEx" style="width: 40%" type="button" value="GetQueueTrafficEx" onclick="return ButtonGetQueueTrafficEx_onclick()" />
+            </td>
+            
+            <td align="right" width="25%" valign="bottom">
+                This DN :
+                <input id="TextAgtThisDN" type="text" align="middle" style="width: 40%;" value=""/></br>
+                Queue DN :
+                <input id="TextAgtQueueDN2" type="text" align="middle" style="width: 40%;" value=""/></br>
+                <input id="ButtonAgtBsr" style="width: 40%" type="button" value="BSR" onclick="return ButtonBsr_onclick()" />
+            </td> 
+        </tr>
+    </table>    
+</body>
+</html>

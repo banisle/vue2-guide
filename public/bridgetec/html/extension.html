@@ -1,0 +1,178 @@
+﻿<html>
+<head>
+    <title></title>
+    <meta http-equiv="X-UA-Compatible" content="IE=11"/> 
+    
+    <style type="text/css">
+        body, table, input
+        {        		
+            font-family: '맑은 고딕'; 
+            font-size: 12px; 
+            font-weight: lighter; 
+            font-style: normal; 
+            background-color: "#FFFFFF"
+        }
+    </style>
+    
+</head>
+
+<script type="text/javascript">
+    var topPage = parent.parent.frames['TopFrm'];
+    var result;
+
+
+    function OnInit() 
+    {    
+      var topPage = parent.frames['TopFrm'];        	       	    
+        	
+    	if(topPage != null)    	     	    			
+    			topPage.ExtensionPage = this;    		                
+    }
+
+    function AddExtOutput(str) {
+        txtExtOutput.value += str + '\n';
+    }
+
+    function GetKeyPosition() {
+        var nPos = Number(TextExtKeyPosition.value);
+
+        if (isNaN(nPos)) {
+            nPos = -1;
+        }
+        return nPos;
+    }
+
+    function GetValuePosition() {
+        var nPos = Number(TextExtValuePosition.value);
+
+        if (isNaN(nPos)) {
+            nPos = -1;
+        }
+        return nPos;
+    }
+
+    function ButtonExtCreate_onclick() {
+        var result;
+        var log = "";
+
+        result = topPage.api.EXTCreateExtension();
+        if (result < 0) {
+            log += " Extension Create. Result Failed [" + result + "]";
+            AddExtOutput(log);
+            //topPage.AddResponse(log);
+            return;
+        }
+        log += " Extension Create. Result Success [" + result + "]";
+        AddExtOutput(log);
+        topPage.TextExHandle.value = result; 
+        //topPage.AddResponse(log);
+    }
+    function ButtonExtAllView_onclick() {
+        var result;
+        var log = "";
+
+        result = topPage.api.GetExtensionData(topPage.TextExHandle.value);
+        if(result < 0) {
+            log += " Extension All View. Result Failed [" + result + "]";
+            AddExtOutput(log);
+            //topPage.AddResponse(log);
+            return;
+        }
+        log += " Extension All View. Result Success [" + result + "]";
+        AddExtOutput(log);
+        //topPage.AddResponse(log);
+    }
+    function ButtonExtDelete_onclick() {
+        var log = "";
+
+        topPage.api.EXTDeleteExtension(topPage.TextExHandle.value);
+        log += " Extension Delete Success";
+        topPage.AddResponse(log);
+    }
+    function ButtonExtAddRecord_onclick() {
+        var log = "";
+
+        topPage.api.EXTAddRecord(topPage.TextExHandle.value, TextExtKey.value, TextExtValue.value);
+        log += " Extension Add Record Success";
+        topPage.AddResponse(log);
+    }
+    function ButtonExtDelRecord_onclick() {
+        var log = "";
+
+        topPage.api.EXTDeleteRecord(topPage.TextExHandle.value, TextExtKey.value);
+        log += " Extension Delete Record Success";
+        topPage.AddResponse(log);
+    }
+    function ButtonExtDelValue_onclick() {
+        var log = "";
+
+        topPage.api.EXTDeleteValue(topPage.TextExHandle.value, TextExtKey.value, TextExtValue.value);
+        log += " Extension Delete Value Success";
+        topPage.AddResponse(log);
+    }
+    function ButtonExtGetKey_onclick() {
+        var log = "";
+        var strKey;
+
+        strKey = topPage.api.EXTGetKey(topPage.TextExHandle.value, GetKeyPosition());
+        log += " Key : [" + strKey + "]";
+        AddExtOutput(log);
+    }
+    function ButtonExtGetValue_onclick() {
+        var log = "";
+        var strValue;
+
+        strValue = topPage.api.EXTGetValueForRecord(topPage.TextExHandle.value, GetKeyPosition(), GetValuePosition());
+        log += " Value : [" + strValue + "]";
+        AddExtOutput(log);
+    }
+   
+
+</script>
+
+<body>
+    <table width="100%" frame="box" onload="javascript:OnInit()">
+    	<tr>
+    		<td colspan="2" align="left">
+    		<h3>* EXTENSION MENU</h3>    
+    	</td>
+    </tr>
+        <tr>
+            <td width="50%">
+                <textarea id="txtExtOutput" name="txtExtOutput" 
+                    style="overflow: scroll; visibility: visible; width: 100%; height: 300px; font-family: '맑은 고딕';" 
+                    rows="1" ></textarea></td>     
+            <td width="50%" align="right" valign="bottom">
+            	Key :
+              &nbsp;
+              <input id="TextExtKey" type="text" align="middle" style="width: 80%;" value=""/>
+              <br>
+              Value :
+              &nbsp;
+              <input id="TextExtValue" type="text" align="middle" style="width: 80%;" value=""/>            
+              <br>
+              Key Position :
+              &nbsp;
+              <input id="TextExtKeyPosition" type="text" align="middle" style="width: 80%;" value=""/>
+              <br>
+              Value Position :
+              &nbsp;
+              <input id="TextExtValuePosition" type="text" align="middle" style="width: 80%;" value=""/>
+              <br>
+              <br>
+              <input id="ButtonExtCreate" style="width: 24%" type="button" value="Extension 생성" onclick="return ButtonExtCreate_onclick()"/>                   
+              <input id="ButtonExtAddRecord" style="width: 24%" type="button" value="Record 추가" onclick="return ButtonExtAddRecord_onclick()" />
+              <input id="ButtonExtDelRecord" style="width: 24%" type="button" value="Record 삭제" onclick="return ButtonExtDelRecord_onclick()" />
+              <input id="ButtonExtAllView" style="width: 24%" type="button" value="Extension 전체보기" onclick="return ButtonExtAllView_onclick()"/>            	
+            	<br>            	
+              <input id="ButtonExtDelValue" style="width: 24%" type="button" value="Value 삭제" onclick="return ButtonExtDelValue_onclick()" />            
+              <input id="ButtonExtDelete" style="width: 24%" type="button" value="Extension 삭제" onclick="return ButtonExtDelete_onclick()" />              
+              <input id="ButtonExtGetKey" style="width: 24%" type="button" value="Key 가져오기" onclick="return ButtonExtGetKey_onclick()" />
+              <input id="ButtonExtGetValue" style="width: 24%" type="button" value="Value 가져오기" onclick="return ButtonExtGetValue_onclick()" />
+              <br>
+            </td>
+        </tr>  
+    </table>    
+    
+</body>
+</html>

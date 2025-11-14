@@ -1,0 +1,1162 @@
+﻿<html>
+<head>
+    <title></title>
+    <meta http-equiv="X-UA-Compatible" content="IE=11"/> 
+    
+    <style type="text/css">
+        body, table, input
+        {        		
+            font-family: '맑은 고딕'; 
+            font-size: 12px; 
+            font-weight: lighter; 
+            font-style: normal; 
+            background-color: "#FFFFFF"
+        }
+        .style1
+        {
+            width: 25%;
+        }
+        
+        .multiselect {
+        width: 50%;
+        }
+        .selectBox {
+            position: relative;
+        }
+        .selectBox select {
+            width: 100%;
+        }
+        .overSelect {
+            position: absolute;
+            left: 0; right: 0; top: 0; bottom: 0;
+        }
+        #checkboxes {
+            display: none;
+            border: 1px #dadada solid;
+        }
+        #checkboxes label {
+            display: block;
+        }
+        #checkboxes label:hover {
+            background-color: #1e90ff;
+        }
+    </style>
+    
+</head>
+
+<script type="text/javascript">
+    var topPage = parent.parent.frames['TopFrm'];
+
+    function OnInit() 
+    {     	
+      var topPage = parent.frames['TopFrm'];        	       	    
+        	
+    	if(topPage != null)    	     	    			
+    			topPage.AgentPage = this;    		            
+    }
+
+    function GetProtocol() {
+        var strProtocol = "";
+
+        switch (Protocol.selectedIndex) {
+            case 0: strProtocol = "https"; break;   // https
+            case 1: strProtocol = "http"; break;    // http
+        }
+        return strProtocol;
+    }
+
+    function GetAgentState() {
+        var nState = 0;
+
+        switch (AgentState.selectedIndex) {
+            case 0: nState = 0; break;  // Null
+            case 1: nState = 10; break; // Logout
+            case 2: nState = 20; break; // Login
+            case 3: nState = 30; break; // Not Ready
+            case 4: nState = 40; break; // Ready
+            case 5: nState = 41; break; // Inbound Ready
+            case 6: nState = 42; break; // Outbound Ready
+            case 7: nState = 50; break; // Busy
+            case 8: nState = 60; break; // AftWork
+        }
+        return nState;
+    }
+
+    function GetAgentStateList1() {
+        var nState = 0;
+
+        switch (AgentState2.selectedIndex) {
+            case 0: nState = 0; break;  // Null
+            case 1: nState = 10; break; // Logout
+            case 2: nState = 20; break; // Login
+            case 3: nState = 30; break; // Not Ready
+            case 4: nState = 40; break; // Ready
+            case 5: nState = 41; break; // Inbound Ready
+            case 6: nState = 42; break; // Outbound Ready
+            case 7: nState = 50; break; // Busy
+            case 8: nState = 60; break; // AftWork
+        }
+        return nState;
+    }
+
+    function GetAgentStateList2() {
+        var nState = 0;
+
+        switch (AgentState3.selectedIndex) {
+            case 0: nState = 0; break;  // Null
+            case 1: nState = 10; break; // Logout
+            case 2: nState = 20; break; // Login
+            case 3: nState = 30; break; // Not Ready
+            case 4: nState = 40; break; // Ready
+            case 5: nState = 41; break; // Inbound Ready
+            case 6: nState = 42; break; // Outbound Ready
+            case 7: nState = 50; break; // Busy
+            case 8: nState = 60; break; // AftWork
+        }
+        return nState;
+    }
+
+    function GetPasswdType() {
+        var nPtype = 0;
+
+        switch (PasswdType.selectedIndex) {
+            case 0: nPtype = 0; break;  // No Encryption
+            case 1: nPtype = 1; break;  // SHA-1 160
+            case 2: nPtype = 2; break;  // SHA-2 256
+            case 3: nPtype = 3; break;  // SHA-2 384
+            case 4: nPtype = 4; break;  // SHA-2 512
+        }
+        return nPtype;
+    }
+
+    var notReadySub = {};
+    var aftWorkSub = {};
+    function AddStateSub(strSubID, strSubName) {
+        var elOptNew = document.createElement('option');
+        elOptNew.text = strSubName;
+        elOptNew.value = strSubID;
+        var elSel = StateSubcode;
+
+        try {
+            elSel.add(elOptNew, null); // standards compliant; doesn't work in IE
+        } catch (ex) {
+            elSel.add(elOptNew); // IE only
+        }
+
+        // Save SubState
+        var nAgentState = GetAgentState();
+        if(nAgentState == 30) // Not Ready
+        {
+            notReadySub[strSubID] = strSubName;
+        }
+        else if(nAgentState == 60) // AftWork
+        {
+            aftWorkSub[strSubID] = strSubName;
+        }
+    }
+
+    function GetAgentSubcode() {
+        var idx = 0;
+        var nSubcode = 0;
+
+        if (StateSubcode.length > 0) {
+            idx = StateSubcode.selectedIndex;
+
+            nSubcode = Number(StateSubcode[idx].value);
+
+            if (isNaN(nSubcode)) {
+                nSubcode = 0;
+            }
+        }
+
+        return nSubcode;
+    }
+
+    function GetAgentSubcodeIn() {
+        var idx = 0;
+        var nSubcode = 0;
+
+        if (StateSubcodeIn.length > 0) {
+            idx = StateSubcodeIn.selectedIndex;
+
+            nSubcode = Number(StateSubcodeIn[idx].value);
+
+            if (isNaN(nSubcode)) {
+                nSubcode = 0;
+            }
+        }
+
+        return nSubcode;
+    }
+
+    function GetAgentSubcodeOut() {
+        var idx = 0;
+        var nSubcode = 0;
+
+        if (StateSubcodeOut.length > 0) {
+            idx = StateSubcodeOut.selectedIndex;
+
+            nSubcode = Number(StateSubcodeOut[idx].value);
+
+            if (isNaN(nSubcode)) {
+                nSubcode = 0;
+            }
+        }
+
+        return nSubcode;
+    }
+
+    function GetRelationMethod() {
+        var nMethod = 0;
+
+        switch (RelationMethod.selectedIndex) {
+            case 0: nMethod = 0; break;  // Insist
+            case 1: nMethod = 1; break;  // Reserve
+            case 2: nMethod = 2; break;  // Flexible
+            case 3: nMethod = 3; break;  // Force
+        }
+        return nMethod;
+    }
+
+    function GetRouteMethod() {
+        var nMethod = 0;
+
+        switch (RouteMethod.selectedIndex) {
+            case 0: nMethod = 0; break;  // UserDefault
+            case 1: nMethod = 1; break;  // Skill
+            case 2: nMethod = 2; break;  // Group
+            case 3: nMethod = 3; break;  // GroupSkill
+        }
+        return nMethod;
+    }
+
+    function GetPartyType() {
+        var nType = 0;
+
+        switch (PartyType.selectedIndex) {
+            case 0: nType = 0; break;  // Silence
+            case 1: nType = 1; break;  // Active
+            case 2: nType = 2; break;  // Coach
+            case 3: nType = 4; break;  // Mute
+            case 4: nType = 5; break;  // Mute Moh
+            case 5: nType = 6; break;  // Rx
+            case 6: nType = 7; break;  // Tx
+        }
+        return nType;
+    }
+
+    function GetQueueEnable() {
+        var nResult = 0;
+
+        switch (QueueEnable.selectedIndex) {
+            case 0: nResult = 0; break;  // Disable
+            case 1: nResult = 1; break;  // Enable
+        }
+        return nResult;
+    }
+
+    function GetMediaType() {
+        var nResult = 0;
+
+        switch (MediaType.selectedIndex) {
+            case 0: nResult = 0; break;  // Voice
+            case 1: nResult = 10; break;  // Chat
+            case 2: nResult = 20; break;  // Video Voice
+            case 3: nResult = 30; break;  // Video Chat
+            case 4: nResult = 40; break;  // Email
+            case 5: nResult = 50; break;  // Fax
+            case 6: nResult = 61; break;  // MVoip
+            case 7: nResult = 80; break;  // Web
+        }
+        return nResult;
+    }
+
+    function GetSrcMediaType() {
+        var nResult = 0;
+
+        switch (SrcMediaType.selectedIndex) {
+            case 0: nResult = 0; break;  // Voice
+            case 1: nResult = 10; break;  // Chat
+            case 2: nResult = 20; break;  // Video Voice
+            case 3: nResult = 30; break;  // Video Chat
+            case 4: nResult = 40; break;  // Email
+            case 5: nResult = 50; break;  // Fax
+            case 6: nResult = 61; break;  // MVoip
+            case 7: nResult = 80; break;  // Web
+        }
+        return nResult;
+    }
+
+    function GetDestMediaType() {
+        var nResult = 0;
+
+        switch (DestMediaType.selectedIndex) {
+            case 0: nResult = 0; break;  // Voice
+            case 1: nResult = 10; break;  // Chat
+            case 2: nResult = 20; break;  // Video Voice
+            case 3: nResult = 30; break;  // Video Chat
+            case 4: nResult = 40; break;  // Email
+            case 5: nResult = 50; break;  // Fax
+            case 6: nResult = 61; break;  // MVoip
+            case 7: nResult = 80; break;  // Web
+        }
+        return nResult;
+    }
+
+    function GetUsePrevAgent() {
+        var nResult = 0;
+
+        switch (UsePrevAgent.selectedIndex) {
+            case 0: nResult = 1; break;  // True
+            case 1: nResult = 0; break;  // False
+        }
+        return nResult;
+    }
+
+    function GetUseDesignatedAgent() {
+        var nResult = 0;
+
+        switch (UseDesignatedAgent.selectedIndex) {
+            case 0: nResult = 1; break;  // True
+            case 1: nResult = 0; break;  // False
+        }
+        return nResult;
+    }
+
+    var expanded = false;
+    function showCheckboxes() {
+        var checkboxes = document.getElementById("checkboxes");
+        if (!expanded) {
+            checkboxes.style.display = "block";
+            expanded = true;
+        } else {
+            checkboxes.style.display = "none";
+            expanded = false;
+        }
+    }
+
+    function GetMediaSet() {
+        var strMediaSet = "";
+        
+        if (voice.checked) if (strMediaSet.length == 0) strMediaSet += "0"; else strMediaSet += "-0";
+        if (chat.checked) if (strMediaSet.length == 0) strMediaSet += "10"; else strMediaSet += "-10";
+        if (video_voice.checked) if (strMediaSet.length == 0) strMediaSet += "20"; else strMediaSet += "-20";
+        if (video_chat.checked) if (strMediaSet.length == 0) strMediaSet += "30"; else strMediaSet += "-30";
+        if (email.checked) if (strMediaSet.length == 0) strMediaSet += "40"; else strMediaSet += "-40";
+        if (fax.checked) if (strMediaSet.length == 0) strMediaSet += "50"; else strMediaSet += "-50";
+        if (mvoip.checked) if (strMediaSet.length == 0) strMediaSet += "61"; else strMediaSet += "-61";
+        if (web.checked) if (strMediaSet.length == 0) strMediaSet += "80"; else strMediaSet += "-80";
+        
+        return strMediaSet;
+    }
+
+    function GetMediaReady() {
+        var nResult = 0;
+
+        switch (MediaReady.selectedIndex) {
+            case 0: nResult = 1; break;  // True
+            case 1: nResult = 0; break;  // False
+        }
+        return nResult;
+    }
+
+    function GetEnable() {
+        var nResult = 0;
+
+        switch (Enable.selectedIndex) {
+            case 0: nResult = 1; break;  // True
+            case 1: nResult = 0; break;  // False
+        }
+        return nResult;
+    }
+
+    function GetUserCdrType() {
+        var nResult = 0;
+
+        switch (UserCdrType.selectedIndex) {
+            case 0: nResult = 1; break;  // Number
+            case 1: nResult = 2; break;  // String
+        }
+        return nResult;
+    }
+
+    function sleep(num) {	//[1/1000초]
+        var now = new Date();
+        var stop = now.getTime() + num;
+        while (true) {
+            now = new Date();
+            if (now.getTime() > stop) return;
+        }
+    }
+
+/*******************
+ * Request Function	
+ *******************/
+
+    function ButtonOpenServer_onclick() {
+        topPage.api.SetProtocol(GetProtocol());
+        topPage.api.SetServerInfo(TextIpAddr1.value, TextPort.value, TextIpAddr2.value, TextPort.value);
+        topPage.api.SetHeartbeatInfo(TextHbPeriod.value, TextHbErrCnt.value);
+        topPage.api.OpenServer("EASD Test App", topPage.CBFuncEvent, topPage.CBFuncResponse);
+    }
+    function ButtonCloseServer_onclick() {
+        topPage.api.CloseServer();
+    }
+    function ButtonRegister_onclick() {
+        topPage.api.Register(TextStartDn.value, TextTenantName.value);
+    }
+    function ButtonUnRegister_onclick() {
+        topPage.api.Unregister(TextStartDn.value, TextTenantName.value);
+    }
+    function ButtonGroupRegister_onclick() {
+        topPage.api.GroupRegister(TextStartDn.value, TextEndDn.value, TextTenantName.value);
+    }
+    function ButtonGroupUnRegister_onclick() {
+        topPage.api.GroupUnregister(TextStartDn.value, TextEndDn.value, TextTenantName.value);
+    }
+    function ButtonGetMediaActivate_onclick() {
+        topPage.api.GetMediaActivate();
+    }
+    function ButtonLogin_onclick() {
+        topPage.api.AgentLogin(TextAgentDN.value, TextAgentID.value, TextAgentPasswd.value, TextTenantName2.value, GetAgentState(), GetAgentSubcode(), 0, GetPasswdType(), GetMediaSet());
+    }
+    function ButtonDupLogin_onclick() {
+        topPage.api.AgentLoginDupChk(TextAgentDN.value, TextAgentID.value, TextAgentPasswd.value, TextTenantName2.value, GetAgentState(), GetAgentSubcode(), 0, GetPasswdType(), GetMediaSet());
+    }
+    function ButtonGroupLogin_onclick() {
+        topPage.api.GroupLogin(TextGroupID.value, TextStartAgentDn.value, TextEndAgentDn.value, TextTenantName2.value, GetAgentState(), GetAgentSubcode(), 0, GetPasswdType(), GetMediaSet());
+    }
+    function ButtonGroupLogout_onclick() {
+        topPage.api.GroupLogout(TextGroupID.value, TextStartAgentDn.value, TextEndAgentDn.value, TextTenantName2.value, 0);
+    }
+    function ButtonAdnLogin_onclick() {
+        topPage.api.AgentAdnLogin(TextTenantName2.value, TextAgentDN.value, TextPbxLoginDN.value, TextAgentID.value, TextAgentPasswd.value, GetPasswdType(), GetAgentState(), GetAgentSubcode(), 0, GetMediaSet());
+    }
+    function ButtonLogout_onclick() {
+        topPage.api.AgentLogout(TextAgentDN.value, TextAgentID.value, TextTenantName2.value, 0);
+    }
+    function ButtonSetAftRecallState_onclick() {
+        topPage.api.SetAftReCallState(TextAgtTenantName.value, TextAgtAgentID.value, GetAgentStateList1(), GetAgentSubcode(), GetMediaSet());
+    }
+    function ButtonSubStateInfo_onclick() {
+        // Select Box 초기화
+        var i = 0;
+        var intTempLength = parseInt(StateSubcode.options.length);
+        var intTargetIndex = 0;
+
+        for (var i = 1; i <= intTempLength; i++) {
+            StateSubcode.options[intTargetIndex] = null;
+        }
+
+        topPage.api.GetStateSubcode(TextTenantName2.value, GetAgentState());
+    }
+    function ButtonForceSetAgentState_onclick() {
+        topPage.api.ForceSetAgentState(TextAgtAgentID.value, TextAgtTenantName.value, GetAgentStateList1(), GetAgentSubcode(), 0, GetMediaSet());
+    }
+    function ButtonSetAgentState_onclick() {
+        topPage.api.SetAgentState(TextAgtAgentID.value, TextAgtTenantName.value, GetAgentStateList1(), GetAgentSubcode(), 0, GetMediaSet());
+    }
+    function ButtonSetAgentStateData_onclick() {
+        topPage.api.SetAgentStateData(TextAgtTenantName.value, TextAgtAgentID.value, GetAgentStateList1(), GetAgentSubcode(), GetMediaSet(), TextAgtCustomData1.value, TextAgtCustomData2.value, TextAgtCustomData3.value);
+    }
+    function ButtonGetDeviceActivate_onclick() {
+        topPage.api.GetDeviceActivate(TextAgtTenantName.value, TextAgtDestDN.value, GetMediaType(), TextAgtPrivateData.value);
+    }
+    function ButtonSetAftCallState_onclick() {
+        topPage.api.SetAFTCallState(TextAgtAgentID.value, TextAgtTenantName.value, GetAgentStateList1(), GetAgentSubcode(), GetMediaSet());
+    }
+    function ButtonSetAftCallStateEx_onclick() {
+        topPage.api.SetAFTCallStateEx(TextAgtAgentID.value, TextAgtTenantName.value, GetAgentStateList1(), GetAgentSubcodeIn(), GetAgentStateList2(), GetAgentSubcodeOut(), GetMediaSet());
+    }
+    function ButtonGetAgentState_onclick() {
+        topPage.api.GetAgentState(TextAgtTenantName.value, TextAgtDestAgentID.value, TextAgtPrivateData.value, 0, GetMediaSet());
+    }
+    function ButtonGetNodeAgentState_onclick() {
+        topPage.api.GetNodeAgentState(TextAgtTenantName.value, TextAgtDestAgentID.value, GetMediaSet());
+    }
+    function ButtonSetSkillEnable_onclick() {
+        topPage.api.SetSkillEnable(TextAgtAgentID.value, TextAgtSkillID.value, GetQueueEnable());
+    }
+    function ButtonRouteable_onclick() {
+        result = topPage.api.GetRouteable(TextAgtTenantName.value, TextAgtDestAgentID.value, 0, GetSrcMediaType());
+    }
+    function ButtonGetRoutePolicy_onclick() {
+        result = topPage.api.GetRoutePolicy(TextAgtTenantName.value, TextAgtDestDN.value, TextAgtDestAgentID.value,
+        TextAgtQueueDN.value, TextAgtSkillID.value, GetMediaType(), TextAgtPrivateData.value);
+    }
+    function ButtonGetConnID_onclick() {
+        topPage.api.GetConnection(TextCallDestDN.value, 0);
+    }
+    function ButtonGetConnIDEx_onclick() {
+        topPage.api.GetConnectionEx(TextCallDestDN.value);
+    }
+    function ButtonGetCallInfo_onclick() {
+        topPage.api.GetCallInfo(TextCallCallID.value);
+    }
+    function ButtonGetCallInfoEx_onclick() {
+        topPage.api.GetCallInfoEx(TextCallCallID.value);
+    }
+    function ButtonMakeCall_onclick() {
+        topPage.api.MakeCall(TextCallDN.value, TextCallDestDN.value, TextCallObCallingDN.value, Number(TextCallSkillLevel.value), Number(TextCallPriority.value), TextCallRelationAgentDN.value,
+                             TextCallRelationAgentID.value, GetRelationMethod(), GetRouteMethod(), Number(TextCallRouteSkillID.value), Number(TextCallRouteGroupID.value), TextCallUcid.value,
+                             topPage.TextExHandle.value, GetSrcMediaType(), GetUsePrevAgent(), GetUseDesignatedAgent(), Number(TextCallRelationTimeout.value), Number(TextHop.value));
+    }
+    function ButtonAnswerCall_onclick() {
+        topPage.api.AnswerCall(TextCallDN.value, topPage.TextConnId.value, topPage.TextExHandle.value, GetSrcMediaType());
+    }
+    function ButtonHoldCall_onclick() {
+        topPage.api.HoldCall(TextCallDN.value, topPage.TextConnId.value, 0, GetSrcMediaType());
+    }
+    function ButtonHoldCallEx_onclick() {
+        topPage.api.HoldCallEx(TextCallDN.value, topPage.TextConnId.value, 0, GetSrcMediaType(), TextCallMediaOption2.value);
+    }
+    function ButtonClearCall_onclick() {
+        topPage.api.ClearCall(TextCallDN.value, topPage.TextConnId.value, 0, GetSrcMediaType());
+    }
+    function ButtonRetrieveCall_onclick() {
+        topPage.api.RetrieveCall(TextCallDN.value, topPage.TextConnId.value, 0, GetSrcMediaType());
+    }
+    function ButtonAgentCall_onclick() {
+        topPage.api.AgentCall(TextCallDN.value, TextCallDestDN.value, TextCallObCallingDN.value, Number(TextCallSkillLevel.value), Number(TextCallPriority.value), TextCallRelationAgentDN.value,
+                             TextCallRelationAgentID.value, GetRelationMethod(), GetRouteMethod(), Number(TextCallRouteSkillID.value), Number(TextCallRouteGroupID.value), TextCallUcid.value,
+                             topPage.TextExHandle.value, GetSrcMediaType(), GetUsePrevAgent(), GetUseDesignatedAgent(), Number(TextCallRelationTimeout.value), Number(TextHop.value));
+    }
+    function ButtonAgentCallEx_onclick() {
+        topPage.api.AgentCallEx(TextCallDN.value, TextCallDestDN.value, TextCallObCallingDN.value, Number(TextCallSkillLevel.value), Number(TextCallPriority.value), TextCallRelationAgentDN.value,
+                             TextCallRelationAgentID.value, GetRelationMethod(), GetRouteMethod(), Number(TextCallRouteSkillID.value), Number(TextCallRouteGroupID.value), TextCallUcid.value,
+                             topPage.TextExHandle.value, GetSrcMediaType(), GetUsePrevAgent(), GetUseDesignatedAgent(), Number(TextCallRelationTimeout.value), TextDnis.value, Number(TextHop.value));
+    }
+//    function ButtonTestCall_onclick() {
+//        setInterval('ButtonMakeCall_onclick()', 3000);
+//    }
+    function ButtonJoinCall_onclick() {
+        topPage.api.JoinCall(TextCallDN.value, TextCallDestDN.value, GetPartyType(), topPage.TextExHandle.value, GetSrcMediaType());
+    }
+    function ButtonAgentJoinCall_onclick() {
+        topPage.api.AgentJoinCall(TextTenantName2.value, TextCallDN.value, TextCallDestDN.value, TextCallDestAgentID.value, GetPartyType(), topPage.TextExHandle.value, GetSrcMediaType());
+    }
+    function ButtonGroupPickup_onclick() {
+        topPage.api.GroupPickup(TextCallDN.value, 0, GetSrcMediaType());
+    }
+    function ButtonQueuePickup_onclick() {
+        topPage.api.QueuePickup(TextCallDN.value, TextCallCallID.value, 0);
+    }
+    function ButtonSinglestepTransfer_onclick() {
+        topPage.api.SinglestepTransfer(TextCallDN.value, topPage.TextConnId.value, TextCallDestDN.value, TextCallObCallingDN.value, Number(TextCallSkillLevel.value), Number(TextCallPriority.value),
+                                       TextCallRelationAgentDN.value, TextCallRelationAgentID.value, GetRelationMethod(), GetRouteMethod(), Number(TextCallRouteSkillID.value), Number(TextCallRouteGroupID.value),
+                                       topPage.TextExHandle.value, GetSrcMediaType(), GetUsePrevAgent(), GetUseDesignatedAgent(), Number(TextCallRelationTimeout.value));
+    }
+    function ButtonMuteTransfer_onclick() {
+        topPage.api.MuteTransfer(TextCallDN.value, topPage.TextPrevConnId.value, TextCallDestDN.value, topPage.TextExHandle.value, GetSrcMediaType());
+    }
+    function ButtonMuteTransferEx_onclick() {
+        topPage.api.MuteTransferEx(TextCallDN.value, topPage.TextConnId.value, topPage.TextPrevConnId.value, TextCallDestDN.value, topPage.TextExHandle.value, GetSrcMediaType());
+    }
+    function ButtonSinglestepConference_onclick() {
+        topPage.api.SinglestepConference(TextCallDN.value, topPage.TextConnId.value, TextCallDestDN.value, TextCallObCallingDN.value, GetPartyType(), topPage.TextExHandle.value, GetSrcMediaType());
+    }
+    function ButtonMuteConference_onclick() {
+        topPage.api.Conference(TextCallDN.value, topPage.TextPrevConnId.value, TextCallDestDN.value, TextCallObCallingDN.value, GetPartyType(), topPage.TextExHandle.value, GetSrcMediaType());
+    }
+    function ButtonDeflectCall_onclick() {
+        topPage.api.DeflectCall(TextCallDN.value, topPage.TextConnId.value, TextCallDestDN.value, TextCallObCallingDN.value, Number(TextCallSkillLevel.value), Number(TextCallPriority.value),
+                                TextCallRelationAgentDN.value, TextCallRelationAgentID.value, GetRelationMethod(), GetRouteMethod(), Number(TextCallRouteSkillID.value), Number(TextCallRouteGroupID.value),
+                                TextCallMediaOption.value, topPage.TextExHandle.value, GetSrcMediaType(),
+                                GetUsePrevAgent(), GetUseDesignatedAgent(), Number(TextCallRelationTimeout.value));
+    }
+    function ButtonMcsReroute_onclick() {
+        topPage.api.MCSReroute(TextCallDN.value, TextCallDestDN.value, TextCallObCallingDN.value, topPage.TextConnId.value, Number(TextCallVirtualMediaID.value), TextCallFailRouteDN.value, 0);
+    }
+    function ButtonSetDeviceMuteEnable_onclick() {
+        topPage.api.SetDeviceMuteEnable(TextCallDN.value, topPage.TextConnId.value, TextCallPrivateData.value, GetSrcMediaType(), GetEnable());
+    }
+    function ButtonUpdateUserdata_onclick() {
+        topPage.api.UpdateUserdata(TextCallDN2.value, TextCallTenantName.value, topPage.TextConnId.value, topPage.TextExHandle.value);
+    }
+    function ButtonSendUserEvent_onclick() {
+        topPage.api.SendUserEvent(TextCallDN2.value, TextCallTenantName.value, TextCallDestDN2.value, topPage.TextExHandle.value);
+    }
+    function ButtonDeleteKeyUserdata_onclick() {
+        topPage.api.DeleteKeyUserdata(TextCallDN2.value, TextCallTenantName.value, topPage.TextConnId.value, topPage.TextExHandle.value);
+    }
+    function ButtonDeleteAllUserdata_onclick() {
+        topPage.api.DeleteAllUserdata(TextCallDN2.value, TextCallTenantName.value, topPage.TextConnId.value);
+    }
+    function ButtonGetUserdata_onclick() {
+        topPage.api.GetUserdata(TextCallTenantName.value, TextCallDN2.value, topPage.TextConnId.value, topPage.TextExHandle.value);
+    }
+    function ButtonGetConnState_onclick() {
+        topPage.api.GetConnState(TextCallDN2.value, topPage.TextConnId.value, 0);
+    }
+    function ButtonSetAniUserdata_onclick() {
+        topPage.api.SetANIUserdata(TextCallDN2.value, TextCallAniNumber.value, topPage.TextExHandle.value);
+    }
+    function ButtonSetUcidUserdata_onclick() {
+        topPage.api.SetUCIDUserdata(TextCallDN2.value, TextCallUcid.value, topPage.TextExHandle.value);
+    }
+    function ButtonSendGlobalEvent_onclick() {
+        topPage.api.SendGlobalEvent(TextCallDN2.value, TextCallUcid.value, 0);
+    }
+    function ButtonGetUserCdr_onclick() {
+        topPage.api.GetUserCdr(topPage.TextConnId.value, TextCallPrivateData2.value);
+    }
+    function ButtonSetUserCdr_onclick() {
+        topPage.api.SetUserCdr(topPage.TextConnId.value, TextCallUserCdr.value, TextCallPrivateData2.value);
+    }
+    function ButtonGetUserCdrEx_onclick() {
+        topPage.api.GetUserCdrEx(topPage.TextConnId.value, TextCallUserCdrIndex.value, TextCallPrivateData2.value);
+    }
+    function ButtonSetUserCdrEx_onclick() {
+        topPage.api.SetUserCdrEx(topPage.TextConnId.value, TextCallUserCdrIndex.value, TextCallUserCdr.value, TextCallPrivateData2.value);
+    }
+    function ButtonSetUserCdrV5_onclick() {
+        topPage.api.SetUserCdrV5(topPage.TextConnId.value, GetUserCdrType(), TextCallUserCdrIndex.value, TextCallUserCdr.value, TextCallPrivateData2.value);
+    }
+    function ButtonReserveIRAttr_onclick() {
+        topPage.api.ReserveIrAttr(TextCallPrivateData2.value, TextCallAniNumber.value, TextCallSkillLevel.value, TextCallPriority.value,
+        GetUsePrevAgent(), GetUseDesignatedAgent(), TextCallRelationAgentDN.value, TextCallRelationAgentID.value,
+        GetRelationMethod(), TextCallRelationTimeout.value, GetRouteMethod(), TextCallRouteSkillID.value,
+        TextCallRouteGroupID.value, GetSrcMediaType());
+    }
+    function ButtonFindWaitIr_onclick() {
+        topPage.api.FindWaitIr(TextCallPrivateData2.value, TextCallAniNumber.value);
+    }
+    function ButtonVirtualQueueRoute_onclick() {
+        topPage.api.VirtualQueueRouting(TextCallDestDN.value, topPage.TextConnId.value, TextCallCallID.value,
+        TextCallPrivateData.value, GetSrcMediaType(), topPage.TextExHandle.value);
+    }
+    function ButtonSetCallback_onclick() {
+        topPage.api.SetCallback(TextCallTenantName.value, TextCallRelationAgentID.value, TextCallRouteGroupID.value,
+        TextCallRouteSkillID.value, TextCallDate.value, GetSrcMediaType(), GetDestMediaType(),
+        TextCallDestInfo1.value, TextCallDestInfo2.value, TextCallDestInfo3.value);
+    }
+    function ButtonReservedAgentState_onclick() {
+        topPage.api.ReservedAgentState(TextTenantName2.value, TextAgentID.value, GetAgentState(), GetAgentSubcode(), GetMediaSet());
+    }
+    function ButtonSetMediaReadyState_onclick() {
+        topPage.api.SetMediaReadyState(TextAgtTenantName.value, TextAgtAgentID.value, GetMediaType(), GetMediaReady())
+    }
+    function ButtonGetMediaReadyState_onclick() {
+        topPage.api.GetMediaReadyState(TextAgtTenantName.value, TextAgtAgentID.value, GetMediaType())
+    }
+    function ButtonGetMediaOption_onclick() {
+        topPage.api.GetMediaOption(TextTenantName2.value, TextAgentID.value);
+    }
+    function ButtonSetMediaOption_onclick() {
+        topPage.api.SetMediaOption(TextTenantName2.value, TextAgentID.value, GetMediaSet(), TextAgentMediaWeight.value, TextAgentMediaMax.value);
+    }
+    function changeAgentState2(value) {
+        // Select Box 초기화
+        var i = 0;
+        var intTempLength = parseInt(StateSubcodeIn.options.length);
+        var intTargetIndex = 0;
+
+        for (var i = 1; i <= intTempLength; i++) {
+            StateSubcodeIn.options[intTargetIndex] = null;
+        }
+
+        if (value == 30) // Not Ready
+        {
+            var keys = Object.keys(notReadySub);
+            for (var i = 0; i < keys.length; i++) {
+                var elOptNew = document.createElement('option');
+                elOptNew.text = notReadySub[keys[i]];
+                elOptNew.value = keys[i];
+                var elSel = StateSubcodeIn;
+
+                try {
+                    elSel.add(elOptNew, null); // standards compliant; doesn't work in IE
+                } catch (ex) {
+                    elSel.add(elOptNew); // IE only
+                }
+            }
+        }
+        else if (value == 60) // AftWork
+        {
+            var keys = Object.keys(aftWorkSub);
+            for (var i = 0; i < keys.length; i++) {
+                var elOptNew = document.createElement('option');
+                elOptNew.text = aftWorkSub[keys[i]];
+                elOptNew.value = keys[i];
+                var elSel = StateSubcodeIn;
+
+                try {
+                    elSel.add(elOptNew, null); // standards compliant; doesn't work in IE
+                } catch (ex) {
+                    elSel.add(elOptNew); // IE only
+                }
+            }
+        }
+    }
+    function changeAgentState3(value) {
+        // Select Box 초기화
+        var i = 0;
+        var intTempLength = parseInt(StateSubcodeOut.options.length);
+        var intTargetIndex = 0;
+
+        for (var i = 1; i <= intTempLength; i++) {
+            StateSubcodeOut.options[intTargetIndex] = null;
+        }
+
+        if (value == 30) // Not Ready
+        {
+            var keys = Object.keys(notReadySub);
+            for (var i = 0; i < keys.length; i++) {
+                var elOptNew = document.createElement('option');
+                elOptNew.text = notReadySub[keys[i]];
+                elOptNew.value = keys[i];
+                var elSel = StateSubcodeOut;
+
+                try {
+                    elSel.add(elOptNew, null); // standards compliant; doesn't work in IE
+                } catch (ex) {
+                    elSel.add(elOptNew); // IE only
+                }
+            }
+        }
+        else if (value == 60) // AftWork
+        {
+            var keys = Object.keys(aftWorkSub);
+            for (var i = 0; i < keys.length; i++) {
+                var elOptNew = document.createElement('option');
+                elOptNew.text = aftWorkSub[keys[i]];
+                elOptNew.value = keys[i];
+                var elSel = StateSubcodeOut;
+
+                try {
+                    elSel.add(elOptNew, null); // standards compliant; doesn't work in IE
+                } catch (ex) {
+                    elSel.add(elOptNew); // IE only
+                }
+            }
+        }
+    }
+
+</script>
+
+<body onload="javascript:OnInit()">
+    <table width="100%" frame="box" cellspacing="10">
+        <tr>
+            <td align="right" width="25%" valign="bottom">
+            	<table width="100%" height="100%" border="0">
+            		<tr>
+            			<td align="left"> 
+            				<h3>* AGENT MENU</h3>    
+            				<p>&nbsp;
+            			</td>
+            		</tr>
+            		<tr>            			
+            			<td align="right" width="100%" height="100%" valign="bottom">
+            				
+                AppName :
+                <input id="TextAppName" type="text" style="width: 50%;" align="middle" value="WebAPITest"/></br>
+                IpAddr1 :
+                <input id="TextIpAddr1" type="text" style="width: 50%;" align="middle" value="100.100.108.141"/></br>
+                IpAddr2 :
+                <input id="TextIpAddr2" type="text" style="width: 50%;" align="middle" value="100.100.108.141"/></br>
+                Port :
+              	<input id="TextPort" type="text" style="width: 50%;" align="middle" value=9203></br>              	
+                Protocol :
+                <select id="Protocol" name="Protocol" style="width: 50%;" align="middle">
+                        <option>https</option>
+                        <option>http</option>
+                </select></br>
+                HBPeriod :
+              	<input id="TextHbPeriod" type="text" style="width: 50%;" align="middle" value=10></br>
+                HBErrCnt :
+              	<input id="TextHbErrCnt" type="text" style="width: 50%;" align="middle" value=18></br>
+                <input id="ButtonOpenServer" style="width: 45%" type="button" value="OpenServer" onclick="return ButtonOpenServer_onclick()" />
+                <input id="ButtonCloseServer" style="width: 50%" type="button" value="CloseServer" onclick="return ButtonCloseServer_onclick()" />
+                
+              </td>
+            </tr>
+          </table>
+            </td>
+            <td align="right" width="25%" valign="bottom">
+                Dn(StartDn) :
+                <input id="TextStartDn" type="text" align="middle" style="width: 50%;" value="4021"/></br>
+                EndDn :
+                <input id="TextEndDn" type="text" align="middle" style="width: 50%;" value=""/></br>
+                Tenant Name :
+                <input id="TextTenantName" type="text" align="middle" style="width: 50%;" value="기본테넌트"/></br>
+                <input id="ButtonRegister" style="width: 43%" type="button" value="Register"  onclick="return ButtonRegister_onclick()" />
+                <input id="ButtonUnRegister" style="width: 43%" type="button" value="UnRegister" onclick="return ButtonUnRegister_onclick()" /></br>
+                <input id="ButtonGroupRegister" style="width: 43%" type="button" value="GroupRegister" onclick="return ButtonGroupRegister_onclick()" />
+                <input id="ButtonGroupUnRegister" style="width: 43%" type="button" value="GroupUnRegister" onclick="return ButtonGroupUnRegister_onclick()" /></br>
+                <input id="ButtonGetMediaActivate" style="width: 43%" type="button" value="GetMediaActivate" onclick="return ButtonGetMediaActivate_onclick()" />
+            </td>
+            <td align="right" valign="bottom" class="style1">
+                Agent ID :
+                <input id="TextAgentID" type="text" style="width: 50%;" align="middle" value="AG4001"/></br>
+                Agent Passwd :
+                <input id="TextAgentPasswd" type="text" style="width: 50%;" align="middle" value=""/></br>
+                Login DN :
+                <input id="TextAgentDN" type="text" style="width: 50%;" align="middle" value="4021"/></br>
+                PBX Login DN :
+                <input id="TextPbxLoginDN" type="text" style="width: 50%;" align="middle" value=""/></br>
+                Tenant Name :
+                <input id="TextTenantName2" type="text" style="width: 50%;" align="middle" value="기본테넌트"/></br>
+                Agent Type :
+                <select id="AgentType" name="AgentType" style="width: 50%;" align="middle">
+                        <option>상담원</option>
+                        <option>관리자</option>
+                </select></br>
+                Agent State :
+                <select id="AgentState" name="AgentState" style="width: 50%;" align="middle">
+                        <option>NULL</option>			 
+						<option>Logout</option>		 
+						<option>Login</option>			 
+						<option>Not Ready</option>		 
+						<option selected="selected">Ready</option>		 
+						<option>INBOUND Ready</option>
+						<option>OUTBOUND Ready</option>
+						<option>Busy</option>			 
+						<option>AftWork</option>
+                </select></br>
+                Sub State Info:
+                <select id="StateSubcode" name="StateSubcode" style="width: 50%;" align="middle">
+                        <option></option>			 
+                </select></br>
+                Password Type :
+                <select id="PasswdType" name="PasswdType" style="width: 50%;" align="middle">
+                        <option>No Encryptiom</option>
+                        <option>SHA-1(160)</option>
+                        <option>SHA-2(256)</option>
+                        <option>SHA-2(384)</option>
+                        <option selected="selected">SHA-2(512)</option>
+                </select></br>
+                
+                <div class="multiselect">
+                    <div class="selectBox" onclick="showCheckboxes()">
+                        <select>
+                            <option>Media Option</option>
+                        </select>
+                        <div class="overSelect"></div>
+                        </div>
+                    <div id="checkboxes">
+                        <label for="voice"><input type="checkbox" id="voice"/>Voice</label>
+                        <label for="chat"><input type="checkbox" id="chat"/>chat</label>
+                        <label for="video_voice"><input type="checkbox" id="video_voice"/>VideoVoice</label>
+                        <label for="video_chat"><input type="checkbox" id="video_chat"/>VideoChat</label>
+                        <label for="email"><input type="checkbox" id="email"/>Email</label>
+                        <label for="fax"><input type="checkbox" id="fax"/>Fax</label>
+                        <label for="mvoip"><input type="checkbox" id="mvoip"/>MVoip</label>
+                        <label for="web"><input type="checkbox" id="web"/>SMS</label>
+                    </div>
+                </div>
+                Agent Media Weight:
+                <input id="TextAgentMediaWeight" type="text" style="width: 50%;" align="middle" value="0"/></br>
+                Agent Media Max:
+                <input id="TextAgentMediaMax" type="text" style="width: 50%;" align="middle" value="0"/></br>
+                Group ID :
+                <input id="TextGroupID" type="text" style="width: 50%;" align="middle" value="2023005276"/></br>
+                StartDn :
+                <input id="TextStartAgentDn" type="text" style="width: 50%;" align="middle" value="2485"/></br>
+                EndDn :
+                <input id="TextEndAgentDn" type="text" style="width: 50%;" align="middle" value="2488"/></br>
+                </br>
+                <input id="ButtonLogin" style="width: 43%" type="button" value="Login" onclick="return ButtonLogin_onclick()" />
+                <input id="ButtonLogout" style="width: 43%" type="button" value="Logout" onclick="return ButtonLogout_onclick()" /></br>
+                <input id="ButtonAdnLogin" style="width: 43%" type="button" value="AdnLogin" onclick="return ButtonAdnLogin_onclick()" />
+                <input id="ButtonDupLogin" style="width: 43%" type="button" value="DupLogin" onclick="return ButtonDupLogin_onclick()" /></br>
+                <input id="ButtonGroupLogin" style="width: 43%" type="button" value="GroupLogin" onclick="return ButtonGroupLogin_onclick()" />
+                <input id="ButtonGroupLogout" style="width: 43%" type="button" value="GroupLogout" onclick="return ButtonGroupLogout_onclick()" /></br>
+                <input id="ButtonSubStateInfo" style="width: 43%" type="button" value="SubStateInfo" onclick="return ButtonSubStateInfo_onclick()" />
+                <input id="ButtonReservedAgentState" style="width: 43%" type="button" value="ReservedAgentState"  onclick="ButtonReservedAgentState_onclick()" /></br>
+                <input id="ButtonGetMediaOption" style="width: 43%" type="button" value="GetMediaOption" onclick="return ButtonGetMediaOption_onclick()" />
+                <input id="ButtonSetMediaOption" style="width: 43%" type="button" value="SetMediaOption" onclick="return ButtonSetMediaOption_onclick()" /></br>
+            </td>
+            <td align="right" width="25%" valign="bottom">
+                Agent ID :
+                <input id="TextAgtAgentID" type="text" align="middle" style="width: 50%;" value=""/></br>
+                Dest Agent ID :
+                <input id="TextAgtDestAgentID" type="text" align="middle" style="width: 50%;" value=""/></br>
+                Tenant Name :
+                <input id="TextAgtTenantName" type="text" align="middle" style="width: 50%;" value=""/></br>
+                Dest DN :
+                <input id="TextAgtDestDN" type="text" align="middle" style="width: 50%;" value=""/></br>
+                Queue DN :
+                <input id="TextAgtQueueDN" type="text" align="middle" style="width: 50%;" value=""/></br>
+                Agent State (In):
+                <select id="AgentState2" name="AgentState2" style="width: 50%;" align="middle" onChange="changeAgentState2(this.options[this.selectedIndex].value)">
+                        <option value=0>NULL</option>			 
+						<option value=10>Logout</option>		 
+						<option value=20>Login</option>			 
+						<option value=30>Not Ready</option>		 
+						<option value=40 selected="selected">Ready</option>		 
+						<option value=41>INBOUND Ready</option>
+						<option value=42>OUTBOUND Ready</option>
+						<option value=50>Busy</option>			 
+						<option value=60>AftWork</option>
+                </select></br>
+                Agent State (Out):
+                <select id="AgentState3" name="AgentState3" style="width: 50%;" align="middle" onChange="changeAgentState3(this.options[this.selectedIndex].value)">
+                        <option value=0>NULL</option>			 
+						<option value=10>Logout</option>		 
+						<option value=20>Login</option>			 
+						<option value=30>Not Ready</option>		 
+						<option value=40 selected="selected">Ready</option>		 
+						<option value=41>INBOUND Ready</option>
+						<option value=42>OUTBOUND Ready</option>
+						<option value=50>Busy</option>			 
+						<option value=60>AftWork</option>
+                </select></br>
+                Sub State Info (In):
+                <select id="StateSubcodeIn" name="StateSubcodeIn" style="width: 50%;" align="middle">
+                        <option></option>			 
+                </select></br>
+                Sub State Info (Out):
+                <select id="StateSubcodeOut" name="StateSubcodeOut" style="width: 50%;" align="middle">
+                        <option></option>			 
+                </select></br>
+                Private Data :
+                <input id="TextAgtPrivateData" type="text" align="middle" style="width: 50%;" value=""/></br>             
+                Skill ID :
+                <input id="TextAgtSkillID" type="text" align="middle" style="width: 50%;" value="0"/></br>  
+                Media Type :
+                <select id="MediaType" name="MediaType" style="width: 50%;" align="middle">
+                    	<option value="Voice"> Voice </option>
+                        <option value="Chat"> Chat </option>
+	                    <option value="Video Voice"> Video Voice </option>
+                        <option value="Video Chat"> Video Chat </option>
+                        <option value="Email"> Email </option>
+                        <option value="Fax"> Fax </option>
+                        <option value="MVoip"> MVoip </option>
+                        <option value="Web"> Web </option>
+                </select></br> 
+                Queue Enable :
+                <select id="QueueEnable" name="QueueEnable" style="width: 50%;" align="middle">
+                        <option>Disable</option>			 
+						<option selected="selected">Enable</option>		 
+                </select></br>
+                Media Ready :
+                <select id="MediaReady" name="MediaReady" style="width: 50%;" align="middle">
+                    	<option value="True"> Ready </option>
+                        <option value="False"> Not Ready </option>
+                </select></br> 
+                Custom Data 1 :
+                <input id="TextAgtCustomData1" type="text" align="middle" style="width: 50%;" value=""/></br>
+                Custom Data 2 :
+                <input id="TextAgtCustomData2" type="text" align="middle" style="width: 50%;" value=""/></br>
+                Custom Data 3 :
+                <input id="TextAgtCustomData3" type="text" align="middle" style="width: 50%;" value=""/></br>
+
+                <input id="ButtonAgtForceSetAgentState" style="width: 29%" type="button" value="ForceAgentState" onclick="return ButtonForceSetAgentState_onclick()" />
+                <input id="ButtonAgtSetAgentState" style="width: 29%" type="button" value="SetAgentState" onclick="return ButtonSetAgentState_onclick()" />
+                <input id="ButtonAgtSetAftCallState" style="width: 29%" type="button" value="SetAftCallState" onclick="return ButtonSetAftCallState_onclick()" /></br>
+                <input id="ButtonAgtSetAftCallStateEx" style="width: 29%" type="button" value="SetAftCallStateEx" onclick="return ButtonSetAftCallStateEx_onclick()" />
+                <input id="ButtonAgtGetAgentState" style="width: 29%" type="button" value="GetAgentState" onclick="return ButtonGetAgentState_onclick()" />
+                <input id="ButtonAgtSetSkillEnable" style="width: 29%" type="button" value="SetSkillEnable" onclick="return ButtonSetSkillEnable_onclick()" /></br>
+                <input id="ButtonRouteable" style="width: 29%" type="button" value="Routeable" onclick="return ButtonRouteable_onclick()" />
+                <input id="ButtonGetRoutePolicy" style="width: 29%" type="button" value="GetRoutePolicy" onclick="return ButtonGetRoutePolicy_onclick()" />
+                <input id="ButtonSetMediaReadyState" style="width: 29%" type="button" value="SetMediaReadyState" onclick="return ButtonSetMediaReadyState_onclick()" /></br>
+                <input id="ButtonGetMediaReadyState" style="width: 29%" type="button" value="GetMediaReadyState" onclick="return ButtonGetMediaReadyState_onclick()" />
+                <input id="ButtonAgtSetAgentStateData" style="width: 29%" type="button" value="SetAgentStateData" onclick="return ButtonSetAgentStateData_onclick()" />
+                <input id="ButtonGetDeviceActivate" style="width: 29%" type="button" value="GetDeviceActivate" onclick="return ButtonGetDeviceActivate_onclick()" />
+                <input id="ButtonGetNodeAgentState" style="width: 29%" type="button" value="GetNodeAgentState" onclick="return ButtonGetNodeAgentState_onclick()" />
+                <input id="ButtonSetAftRecallState" style="width: 29%" type="button" value="SetAftRecallState" onclick="return ButtonSetAftRecallState_onclick()" />
+            </td>
+        </tr>
+    </table>
+    
+    <table width="100%" frame="box" cellspacing="10">
+        <tr>
+            <td align="right" width="25%" valign="bottom">
+            	<table width="100%" height="100%" border="0">
+            		<tr>
+            			<td align="left"> 
+            				<h3>* CALL MENU</h3>    
+            				
+            			</td>
+            		</tr>
+            		<tr>            			
+            			<td align="right" width="100%" height="100%" valign="bottom">
+                DN :
+                <input id="TextCallDN" type="text" align="middle" style="width: 50%;" value="4021"/></br>
+                Dest DN :
+                <input id="TextCallDestDN" type="text" align="middle" style="width: 50%;"/></br>
+                OB Calling DN :
+                <input id="TextCallObCallingDN" type="text" align="middle" style="width: 50%;" value=""/></br>
+                Skill Level :
+                <input id="TextCallSkillLevel" type="text" align="middle" style="width: 50%;" value="0"/></br>
+                Priority :
+                <input id="TextCallPriority" type="text" align="middle" style="width: 50%;" value="0"/></br>
+                Src Media Type :
+                <select id="SrcMediaType" name="SrcMediaType" style="width: 50%;" align="middle">
+                    	<option value="Voice"> Voice </option>
+                        <option value="Chat"> Chat </option>
+	                    <option value="Video Voice"> Video Voice </option>
+                        <option value="Video Chat"> Video Chat </option>
+                        <option value="Email"> Email </option>
+                        <option value="Fax"> Fax </option>
+                        <option value="MVoip"> MVoip </option>
+                        <option value="Web"> Web </option>
+                </select></br> 
+                Dest Media Type :
+                <select id="DestMediaType" name="DestMediaType" style="width: 50%;" align="middle">
+                    	<option value="Voice"> Voice </option>
+                        <option value="Chat"> Chat </option>
+	                    <option value="Video Voice"> Video Voice </option>
+                        <option value="Video Chat"> Video Chat </option>
+                        <option value="Email"> Email </option>
+                        <option value="Fax"> Fax </option>
+                        <option value="MVoip"> MVoip </option>
+                        <option value="Web"> Web </option>
+                </select></br>
+                Media Option :
+                <input id="TextCallMediaOption2" type="text" align="middle" style="width: 50%;" value=""/></br>
+                HOP :
+                <input id="TextHop" type="text" align="middle" style="width: 50%;" value=""/></br>
+                DNIS :
+                <input id="TextDnis" type="text" align="middle" style="width: 50%;" value=""/></br>
+
+                <input id="ButtonCallMakeCall" style="width: 28%" type="button" value="MakeCall" onclick="return ButtonMakeCall_onclick()" />
+                <input id="ButtonCallAnswerCall" style="width: 28%" type="button" value="AnswerCall" onclick="return ButtonAnswerCall_onclick()" />
+                <input id="ButtonCallClearCall" style="width: 28%" type="button" value="ClearCall" onclick="return ButtonClearCall_onclick()" /></br>
+                <input id="ButtonCallHoldCall" style="width: 28%" type="button" value="HoldCall" onclick="return ButtonHoldCall_onclick()" />
+                <input id="ButtonCallHoldCallEx" style="width: 28%" type="button" value="HoldCallEx" onclick="return ButtonHoldCallEx_onclick()" />
+                <input id="ButtonCallRetrieveCall" style="width: 28%" type="button" value="RetrieveCall" onclick="return ButtonRetrieveCall_onclick()" />
+                <input id="ButtonCallAgentCall" style="width: 28%" type="button" value="AgentCall" onclick="return ButtonAgentCall_onclick()" />
+                <input id="ButtonCallAgentCallEx" style="width: 28%" type="button" value="AgentCallEx" onclick="return ButtonAgentCallEx_onclick()" />
+                <!--<input id="ButtonTestCall" style="width: 28%" type="button" value="TestCall" onclick="return ButtonTestCall_onclick()" />-->
+              </td>
+            </tr>
+          </table>
+            </td>
+            <td align="right" width="25%" valign="bottom">
+                Relation Agent DN :
+                <input id="TextCallRelationAgentDN" type="text" align="middle" style="width: 50%;" value=""/></br>
+                Relation Agent ID :
+                <input id="TextCallRelationAgentID" type="text" align="middle" style="width: 50%;" value=""/></br>
+                Relation Method :
+                <select id="RelationMethod" name="RelationMethod" style="width: 50%;" align="middle">
+                    	<option value="Insist"> Insist </option>
+                        <option value="Reserve"> Reserve </option>
+	                    <option value="Flexible"> Flexible </option>
+                        <option value="Flexible"> Force </option>
+                </select></br>
+                Relation Timeout :
+                <input id="TextCallRelationTimeout" type="text" align="midid" style="width: 50%;" value="0"/></br>
+                Route Method :
+                <select id="RouteMethod" name="RouteMethod" style="width: 50%;" align="middle">
+                    	<option value="UseDefault"> UseDefault </option>
+                        <option value="Skill"> Skill </option>
+	                    <option value="Group"> Group </option>
+                        <option value="GroupSkill"> GroupSkill </option>
+                </select></br>
+                Route Skill ID :
+                <input id="TextCallRouteSkillID" type="text" align="middle" style="width: 50%;" value="0"/></br>
+                Route Group ID :
+                <input id="TextCallRouteGroupID" type="text" align="middle" style="width: 50%;" value="0"/></br>
+                Call ID :
+                <input id="TextCallCallID" type="text" align="middle" style="width: 50%;" value="0"/></br>
+                Private Data :
+                <input id="TextCallPrivateData" type="text" align="middle" style="width: 50%;" value="0"/></br>
+                Enable :
+                <select id="Enable" name="Enable" style="width: 50%;" align="middle">
+                    	<option value="True"> True </option>
+                        <option value="False"> False </option>
+                </select></br> 
+                <input id="ButtonCallGroupPickup" style="width: 45%" type="button" value="GroupPickup" onclick="return ButtonGroupPickup_onclick()" />
+                <input id="ButtonCallQueuePickup" style="width: 45%" type="button" value="QueuePickup" onclick="return ButtonQueuePickup_onclick()" /></br>
+                <input id="ButtonCallGetConnID" style="width: 45%" type="button" value="GetConnID" onclick="return ButtonGetConnID_onclick()" />
+                <input id="ButtonCallGetConnIDEx" style="width: 45%" type="button" value="GetConnIDEx" onclick="return ButtonGetConnIDEx_onclick()" /></br>
+                <input id="ButtonCallGetCallInfo" style="width: 45%" type="button" value="GetCallInfo" onclick="return ButtonGetCallInfo_onclick()" />
+                <input id="ButtonCallMcsReroute" style="width: 45%" type="button" value="McsReroute" onclick="return ButtonMcsReroute_onclick()" /></br>
+                <input id="ButtonCallGetCallInfoEx" style="width: 45%" type="button" value="GetCallInfoEx" onclick="return ButtonGetCallInfoEx_onclick()" />
+                <input id="ButtonCallSetDeviceMuteEnable" style="width: 45%" type="button" value="SetDeviceMuteEnable" onclick="return ButtonSetDeviceMuteEnable_onclick()" />
+             </td>
+             <td align="right" width="25%" valign="bottom">
+                Dest Agent ID :
+                <input id="TextCallDestAgentID" type="text" align="middle" style="width: 50%;" value=""/></br> 
+                Party Type :
+                <select id="PartyType" name="PartyType" style="width: 50%;" align="middle">
+                    	<option value="Silence"> Silence </option>
+                        <option value="Active"> Active </option>
+	                    <option value="Coach"> Coach </option>
+                        <option value="Mute"> Mute </option>
+                        <option value="MuteMoh"> Mute Moh</option>
+                        <option value="Rx"> Rx </option>
+                        <option value="Tx"> Tx </option>
+                </select></br> 
+                Media Option :
+                <input id="TextCallMediaOption" type="text" align="middle" style="width: 50%;" value=""/></br>
+                Virtual Media ID :
+                <input id="TextCallVirtualMediaID" type="text" align="middle" style="width: 50%;" value="0"/></br>
+                Fail Route DN :
+                <input id="TextCallFailRouteDN" type="text" align="middle" style="width: 50%;" value=""/></br>
+                Date :
+                <input id="TextCallDate" type="text" align="middle" style="width: 50%;" value="YYYYMMDDHHmmss"/></br>
+                Use Prev Agent :
+                <select id="UsePrevAgent" name="UsePrevAgent" style="width: 50%;" align="middle">
+                    	<option value="True"> True </option>
+                        <option value="False"> False </option>
+                </select></br> 
+                Use Designated Agent :
+                <select id="UseDesignatedAgent" name="UseDesignatedAgent" style="width: 50%;" align="middle">
+                    	<option value="True"> True </option>
+                        <option value="False"> False </option>
+                </select></br>
+
+                <input id="ButtonCallMuteTransferEx" style="width: 45%" type="button" value="MuteTransferEx" onclick="return ButtonMuteTransferEx_onclick()" /> 
+                <input id="ButtonCallSinglestepTransfer" style="width: 45%" type="button" value="SinglestepTransfer" onclick="return ButtonSinglestepTransfer_onclick()" />
+                <input id="ButtonCallMuteTransfer" style="width: 45%" type="button" value="MuteTransfer" onclick="return ButtonMuteTransfer_onclick()" /></br>
+                <input id="ButtonCallSinglestepConference" style="width: 45%" type="button" value="SinglestepConference" onclick="return ButtonSinglestepConference_onclick()" />
+                <input id="ButtonCallMuteConference" style="width: 45%" type="button" value="MuteConference" onclick="return ButtonMuteConference_onclick()" /></br>
+                <input id="ButtonCallDeflectCall" style="width: 45%" type="button" value="DeflectCall" onclick="return ButtonDeflectCall_onclick()" />
+                <input id="ButtonCallJoinCall" style="width: 45%" type="button" value="JoinCall" onclick="return ButtonJoinCall_onclick()" />
+                <input id="ButtonVirtualQueueRoute" style="width: 45%" type="button" value="VirtualQueueRoute" onclick="return ButtonVirtualQueueRoute_onclick()" />
+                <input id="ButtonSetCallback" style="width: 45%" type="button" value="SetCallback" onclick="return ButtonSetCallback_onclick()" /></br>
+                <input id="ButtonCallAgentJoinCal" style="width: 45%" type="button" value="AgentJoinCall" onclick="return ButtonAgentJoinCall_onclick()" />
+            </td>
+            <td align="right" width="25%" valign="bottom">
+                Dest Info 1 :
+                <input id="TextCallDestInfo1" type="text" align="middle" style="width: 50%;" value=""/></br>
+                Dest Info 2 :
+                <input id="TextCallDestInfo2" type="text" align="middle" style="width: 50%;" value=""/></br>
+                Dest Info 3 :
+                <input id="TextCallDestInfo3" type="text" align="middle" style="width: 50%;" value=""/></br>
+                DN :
+                <input id="TextCallDN2" type="text" align="middle" style="width: 50%;" value=""/></br>
+                Dest DN :
+                <input id="TextCallDestDN2" type="text" align="middle" style="width: 50%;" value=""/></br>             
+                Tenant Name :
+                <input id="TextCallTenantName" type="text" align="middle" style="width: 50%;" value="기본테넌트"/></br>               
+                Ani Number :
+                <input id="TextCallAniNumber" type="text" align="middle" style="width: 50%;" value=""/></br>               
+                UCID :
+                <input id="TextCallUcid" type="text" align="middle" style="width: 50%;" value=""/></br>
+                UserCdrType
+                <select id="UserCdrType" name="UserCdrType" style="width: 50%;" align="middle">
+                        <option>Number</option>
+                        <option>String</option>
+                </select></br>
+                User CDR Index:
+                <input id="TextCallUserCdrIndex" type="text" align="middle" style="width: 50%;" value=""/></br>
+                User CDR :
+                <input id="TextCallUserCdr" type="text" align="middle" style="width: 50%;" value=""/></br>
+                Private Data :
+                <input id="TextCallPrivateData2" type="text" align="middle" style="width: 50%;" value=""/></br>
+                <input id="ButtonCallUpdateUserdata" style="width: 44%" type="button" value="UpdateUserdata" onclick="return ButtonUpdateUserdata_onclick()" />
+                <input id="ButtonCallSendUserEvent" style="width: 44%" type="button" value="SendUserEvent" onclick="return ButtonSendUserEvent_onclick()" /></br>
+                <input id="ButtonCallDeleteKeyUserdata" style="width: 44%" type="button" value="DeleteKeyUserdata" onclick="return ButtonDeleteKeyUserdata_onclick()" />
+                <input id="ButtonCallDeleteAllUserdata" style="width: 44%" type="button" value="DeleteAllUserdata" onclick="return ButtonDeleteAllUserdata_onclick()" /></br>
+                <input id="ButtonCallGetUserdata" style="width: 44%" type="button" value="GetUserdata" onclick="return ButtonGetUserdata_onclick()" />
+                <input id="ButtonCallGetConnState" style="width: 44%" type="button" value="GetConnState" onclick="return ButtonGetConnState_onclick()" /></br>
+                <input id="ButtonCallSetAniUserdata" style="width: 44%" type="button" value="SetAniUserdata" onclick="return ButtonSetAniUserdata_onclick()" />
+                <input id="ButtonCallSetUcidUserdata" style="width: 44%" type="button" value="SetUcidUserdata" onclick="return ButtonSetUcidUserdata_onclick()" /></br>
+                <input id="ButtonCallSendGlobalEvent" style="width: 44%" type="button" value="SendGlobalEvent" onclick="return ButtonSendGlobalEvent_onclick()" />
+                <input id="ButtonCallGetUserCdr" style="width: 44%" type="button" value="GetUserCdr" onclick="return ButtonGetUserCdr_onclick()" /></br>
+                <input id="ButtonCallSetUserCdr" style="width: 44%" type="button" value="SetUserCdr" onclick="return ButtonSetUserCdr_onclick()" />
+                <input id="ButtonCallGetUserCdrEx" style="width: 44%" type="button" value="GetUserCdrEx" onclick="return ButtonGetUserCdrEx_onclick()" /></br>
+                <input id="ButtonCallSetUserCdrEx" style="width: 44%" type="button" value="SetUserCdrEx" onclick="return ButtonSetUserCdrEx_onclick()" />
+                <input id="ButtonCallSetUserCdrV5" style="width: 44%" type="button" value="SetUserCdrV5" onclick="return ButtonSetUserCdrV5_onclick()" /></br>
+                <input id="ButtonCallReserveIrAttr" style="width: 44%" type="button" value="ReserveIRAttr" onclick="return ButtonReserveIRAttr_onclick()" />
+                <input id="ButtonCallFindWaitIr" style="width: 44%" type="button" value="FindWaitIr" onclick="return ButtonFindWaitIr_onclick()" /></br>
+
+            </td>
+        </tr>
+    </table>
+    
+</body>
+</html>

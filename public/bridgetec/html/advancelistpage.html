@@ -1,0 +1,248 @@
+﻿<html>
+<head>
+    <title></title>
+    <meta http-equiv="X-UA-Compatible" content="IE=11"/> 
+    
+    <style type="text/css">
+        body, table, input
+        {        		
+            font-family: '맑은 고딕'; 
+            font-size: 12px; 
+            font-weight: lighter; 
+            font-style: normal; 
+            background-color: "#FFFFFF"
+        }
+    </style>
+    
+</head>
+
+<script type="text/javascript">
+    var topPage = parent.parent.frames['TopFrm'];
+
+    function OnInit() {
+        var topPage = parent.frames['TopFrm'];
+
+        if (topPage != null)
+            topPage.AdvanceListPage = this;
+    }
+
+    function GetListOption() {
+        return ListOption.selectedIndex;
+    }
+
+    function GetAgentState() {
+        var nState = 0;
+        switch (AgentState.selectedIndex) {
+            case 0: nState = 0; break;  // Null
+            case 1: nState = 10; break; // Logout
+            case 2: nState = 20; break; // Login
+            case 3: nState = 30; break; // Not Ready
+            case 4: nState = 40; break; // Ready
+            case 5: nState = 41; break; // Inbound Ready
+            case 6: nState = 42; break; // Outbound Ready
+            case 7: nState = 50; break; // Busy
+            case 8: nState = 60; break; // AftWork
+        }
+        return nState;
+    }
+
+    function SetList(method, handle) {
+        TextListId.value = handle;
+        var rowLen = tableData.rows.length;
+        for (var i = 0; i < rowLen - 1; i++) {
+            tableData.deleteRow(1);
+        }
+
+        for (var i = 0; i < topPage.api.GetListItemCnt(handle); i++) {
+            rowLen = tableData.rows.length;
+            var row = tableData.insertRow(rowLen);
+            row.insertCell(0).innerHTML = method.toString();
+            for (var j = 0; j < 11; j++) {
+                var item = topPage.api.GetListItem(handle, i, j);
+                var showData;
+                if (j == 4) { // State
+                    switch (item) {
+                        case "0": showData = "Null"; break;  // Null
+                        case "10": showData = "Logout"; break; // Logout
+                        case "20": showData = "Login"; break; // Login
+                        case "30": showData = "Not Ready"; break; // Not Ready
+                        case "40": showData = "Ready"; break; // Ready
+                        case "41": showData = "Inbound Ready"; break; // Inbound Ready
+                        case "42": showData = "Outbound Ready"; break; // Outbound Ready
+                        case "50": showData = "Busy"; break; // Busy
+                        case "60": showData = "AftWork"; break; // AftWork
+                        case "": showData = ""; break;
+                        default: showData = "Unknown(" + item + ")"; break;
+                    }
+                }
+                else if (j == 6) { // Keep Time
+                    if (item != "") {
+                        var time = new Date(0, 0, 0, 0, 0, item, 0);
+                        showData = time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds();
+                    }
+                }
+                else if (j == 7) { // In/Out
+                    switch (item) {
+                        case "0": showData = "None"; break;
+                        case "10": showData = "IN"; break;
+                        case "20": showData = "OUT"; break;
+                        case "": showData = ""; break;
+                        default: showData = "Unknown(" + item + ")"; break;
+                    }
+                }
+                else {
+                    showData = item;
+                }
+
+                row.insertCell(j + 1).innerHTML = showData;
+            }
+        }
+    }
+
+    function GetMediaType() {
+        var nResult = 0;
+
+        switch (SrcMediaType.selectedIndex) {
+            case 0: nResult = 0; break;  // Voice
+            case 1: nResult = 10; break;  // Chat
+            case 2: nResult = 20; break;  // Video Voice
+            case 3: nResult = 30; break;  // Video Chat
+            case 4: nResult = 40; break;  // Email
+            case 5: nResult = 50; break;  // Fax
+            case 6: nResult = 61; break;  // MVoip
+            case 7: nResult = 80; break;  // Web
+        }
+        return nResult;
+    }
+
+    function ButtonGroupList_onclick() {
+        topPage.api.AdGetGroupList(TextTenantName.value, TextPrivateData.value);
+    }
+
+    function ButtonQueueList_onclick() {
+        topPage.api.AdGetQueueList(TextTenantName.value, TextPrivateData.value);
+    }
+
+    function ButtonAgentList_onclick() {
+        topPage.api.AdGetAgentList(TextTenantName.value, TextGroupIdSet.value, TextQueueDnSet.value, TextPrivateData.value, GetAgentState(), GetMediaType());
+    }
+
+    function ButtonAgentSkillList_onclick() {
+        topPage.api.AdGetAgentSkillList(TextTenantName.value, TextLoginAgentId.value);
+    }
+
+    function ButtonAgentQueueList_onclick() {
+        topPage.api.AdGetAgentQueueList(TextTenantName.value, TextLoginAgentId.value);
+    }
+
+    function ButtonGetListItemData_onclick() {
+        TextListOutput.value = topPage.api.GetListItem(TextListId.value, TextListIndex.value, GetListOption());
+    }
+
+    function ButtonGetListItemFilter_onclick() {
+        var handle = topPage.api.GetListItemFilter(TextListId.value, GetListOption(), TextListFilter.value);
+        SetList("filter", handle);
+    }
+
+    function ButtonGetListItemCount_onclick() {
+        TextListCount.value = topPage.api.GetListItemCnt(TextListId.value);
+    }
+
+</script>
+<body onload="javascript:OnInit()">
+<table width="100%" frame="box" cellspacing="0" >
+<tr>
+<td colspan=2><h3>* AdvanceList Page</h3></td>
+<td align=right>List Count :</td>
+<td><input id="TextListCount" type="text" align="middle" /></td>
+<td align=right>List Output :</td>
+<td><input id="TextListOutput" type="text" align="middle"/></td>
+<td><input id="ButtonGetListItemData" style="width: 100%" type="button" value="Get List Item Data" onclick="return ButtonGetListItemData_onclick()" /></td>
+<td><input id="ButtonGetListItemFilter" style="width: 100%" type="button" value="Get List Item Filter" onclick="return ButtonGetListItemFilter_onclick()" /></td>
+<td><input id="ButtonGetListItemCount" style="width: 100%" type="button" value="Get List Item Count" onclick="return ButtonGetListItemCount_onclick()" /></td>
+</tr>
+<tr>
+<td align=right>List ID :</td>
+<td><input id="TextListId" type="text" align="middle" /></td>
+<td align=right>List Index :</td>
+<td><input id="TextListIndex" type="text" align="middle" /></td>
+<td align=right>List Option :</td>
+<td><select id="ListOption" name="ListOption" style="width: 100%;" align="middle">
+						<option selected="selected">ID</option>		 
+						<option>DN</option>
+                        <option>LOGIN ID</option>
+                        <option>NAME</option>
+                        <option>STATE</option>
+                        <option>STATE SUB</option>
+                        <option>STATE KEEP TIME</option>
+                        <option>IN/OUT</option>
+                        <option>SKILL LEVEL</option>
+                        <option>SKILL ID</option>
+                        <option>SKILL ENABLE</option>
+                </select></td>
+<td align=right>List Filter :</td>
+<td><input id="TextListFilter" type="text" align="middle" /></td>
+</tr>
+</table>
+<table width="100%" frame="box" cellspacing="0" >
+<td align=right>Group ID :</td>
+<td><input id="TextGroupIdSet" type="text" align="middle"/></td>
+<td align=right>Queue DN :</td>
+<td><input id="TextQueueDnSet" type="text" align="middle"/></td>
+<td align=right>Tenant Name :</td>
+<td><input id="TextTenantName" type="text" align="middle"/></td>
+<td align=right>상담원 상태 필터 :</td>
+<td><select id="AgentState" name="AgentState" style="width: 100%;" align="middle">
+                        <option>NULL</option>			 
+						<option>Logout</option>		 
+						<option>Login</option>			 
+						<option>Not Ready</option>		 
+						<option selected="selected">Ready</option>		 
+						<option>INBOUND Ready</option>
+						<option>OUTBOUND Ready</option>
+						<option>Busy</option>			 
+						<option>AftWork</option>
+                </select></td>
+<td align=right>Login Agent ID :</td>
+<td><input id="TextLoginAgentId" type="text" align="middle"/></td>
+</tr>
+<tr>
+<td align=right>Private Data :</td>
+<td><input id="TextPrivateData" type="text" align="middle"/></td>
+<td align=right>Media Type : </td>
+ <td>
+ <select id="SrcMediaType" name="MediaType" style="width: 100%;" align="middle">
+                    	<option value="Voice"> Voice </option>
+                        <option value="Chat"> Chat </option>
+	                    <option value="Video Voice"> Video Voice </option>
+                        <option value="Video Chat"> Video Chat </option>
+                        <option value="Email"> Email </option>
+                        <option value="Fax"> Fax </option>
+                        <option value="MVoip"> MVoip </option>
+                        <option value="Web"> Web </option>
+                </select></br> 
+</td>
+<td><input id="ButtonGroupList" style="width: 100%" type="button" value="Group List" onclick="return ButtonGroupList_onclick()" /></td>
+<td><input id="ButtonQueueList" style="width: 100%" type="button" value="Queue List" onclick="return ButtonQueueList_onclick()" /></td>
+<td><input id="ButtonAgentList" style="width: 100%" type="button" value="Agent List" onclick="return ButtonAgentList_onclick()" /></td>
+<td><input id="ButtonAgentSkillList" style="width: 100%" type="button" value="Agent Skill List" onclick="return ButtonAgentSkillList_onclick()" /></td>
+<td><input id="ButtonAgentQueueList" style="width: 100%" type="button" value="Agent Queue List" onclick="return ButtonAgentQueueList_onclick()" /></td>
+</table>
+<table id="tableData" width="100%" frame="box" cellspacing="0" border="1">
+<tr>
+<td>IDX</td>
+<td>ID</td>
+<td>DN</td>
+<td>LOGIN ID</td>
+<td>NAME</td>
+<td>STATE</td>
+<td>STATE SUB</td>
+<td>STATE KEEP TIME</td>
+<td>IN/OUT</td>
+<td>SKILL LEVEL</td>
+<td>SKILL ID</td>
+<td>SKILL ENABLE</td>
+</tr>
+</table>
+</body>
+</html>
